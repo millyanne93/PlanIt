@@ -17,7 +17,18 @@ def signup():
 def login():
     data = request.get_json()
     user = User.query.filter_by(username=data['username']).first()
+
     if user and user.check_password(data['password']):
         access_token = create_access_token(identity=user.id)
-        return jsonify(access_token=access_token), 200
+        
+        # Include the user information in the response
+        user_data = {
+            'id': user.id,
+            'username': user.username,
+            'email': user.email
+        }
+        
+        # Return both the token and the user data
+        return jsonify(access_token=access_token, user=user_data), 200
+    
     return jsonify(message="Invalid credentials"), 401

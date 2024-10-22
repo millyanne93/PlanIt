@@ -12,7 +12,7 @@ const Header = () => {
 
     return (
         <header className="bg-gradient-to-r from-pink-400 to-purple-200 p-4 flex justify-between items-center">
-            <h1 className="text-black text-2xl text-bold">PlanIt</h1>
+            <h1 className="text-pink-900 text-2xl font-semibold">PlanIt</h1>
             <nav className="relative">
                 {user ? (
                     <>
@@ -39,8 +39,8 @@ const Header = () => {
                     </>
                 ) : (
                     <div className="flex space-x-4">
-                        <Link to="/" className="text-black">Home</Link>
-                        <button onClick={toggleDropdown} className="text-black focus:outline-none">
+                        <Link to="/" className="text-pink-900">Home</Link>
+                        <button onClick={toggleDropdown} className="text-pink-900 focus:outline-none">
                             Login / Signup
                         </button>
                         {dropdownOpen && (

@@ -22,15 +22,22 @@ export const login = async (userData) => {
     return response.json();
 };
 
-export const createTask = async (taskData, token) => {
+export const createTask = async (formData, token) => {
+    console.log("Token passed to createTask:", token);
     const response = await fetch(`${API_URL}/tasks`, {
         method: 'POST',
         headers: {
-            'Authorization': `Bearer ${token}`,
             'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`,
         },
-        body: JSON.stringify(taskData),
+        body: JSON.stringify(formData),  // 'due_date' is part of taskData
     });
+
+    if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || errorData.message || 'Error creating task');
+    }
+
     return response.json();
 };
 
@@ -41,5 +48,13 @@ export const getTasks = async (token) => {
             'Authorization': `Bearer ${token}`,
         },
     });
+
+    // Handle response errors
+    if (!response.ok) {
+        const errorData = await response.json();
+        console.error('Error fetching tasks:', errorData);
+        throw new Error(errorData.error || 'Error fetching tasks');
+    }
+
     return response.json();
 };

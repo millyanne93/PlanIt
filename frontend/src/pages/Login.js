@@ -1,21 +1,26 @@
-import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom'; // Change useHistory to useNavigate
+import React, { useState, useContext } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { login } from '../api';
+import { AuthContext } from '../context/AuthContext';
 
 const Login = () => {
+    const { loginUser } = useContext(AuthContext);
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
     const [error, setError] = useState('');
-    const navigate = useNavigate(); // Change history to navigate
+    const navigate = useNavigate();
 
     const handleSubmit = async (e) => {
         e.preventDefault();
         try {
+            console.log('Attempting login with:', { username, password });
             const response = await login({ username, password });
-            navigate('/dashboard'); // Redirect to home page on successful login
+            console.log('Login response:', response);
+            loginUser(response); // Save token and user data
+            navigate('/dashboard');
         } catch (err) {
-            // Check if err.response is defined
             const errorMessage = err.response ? err.response.data.message : 'An error occurred. Please try again.';
+            console.error('Login error:', errorMessage);
             setError(errorMessage);
         }
     };

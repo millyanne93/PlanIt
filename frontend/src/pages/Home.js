@@ -6,7 +6,7 @@ const Home = () => {
     return (
         <div className="min-h-screen bg-gradient-to-b from-pink-200 to-white p-8">
             <header className="text-center mb-12">
-                <h1 className="text-pink-600 text-6xl font-bold">Welcome to PlanIt!</h1>
+                <h1 className="text-pink-600 text-6xl font-bold">Plan It. Do It. Achieve It!</h1>
                 <p className="text-gray-700 mt-2 text-lg">Your personal task management application.</p>
                 <Link to="/signup" className="mt-4 inline-block bg-pink-600 text-white px-6 py-2 rounded-full hover:bg-pink-700 transition">
                     Get Started

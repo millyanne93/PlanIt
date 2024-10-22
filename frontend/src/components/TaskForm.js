@@ -7,66 +7,72 @@ const TaskForm = () => {
     const [title, setTitle] = useState('');
     const [description, setDescription] = useState('');
     const [dueDate, setDueDate] = useState('');
-    const [error, setError] = useState(''); // Add error state for feedback
+    const [error, setError] = useState('');
 
-    const handleSubmit = async (e) => {
-        e.preventDefault();
+    const handleSubmit = async (event) => {
+        event.preventDefault();
 
-        // Log the formatted date for debugging
-        console.log('Raw dueDate:', dueDate); 
-        console.log({ title, description, dueDate });
+        if (!title || !dueDate) {
+            setError('Title and Due Date are required');
+            return;
+        }
+
+        const formattedDueDate = new Date(dueDate).toISOString().split('T')[0];
+
+        const formData = {
+            title: title,
+            description: description,
+            due_date: formattedDueDate
+        };
+
+        console.log('Form Data being sent to the API:', formData);
+        console.log('Token being used for authentication:', token);
 
         try {
-            // Sending the formatted date to the API
-            await createTask({ title, description, due_date: dueDate }, token);
+            const response = await createTask(formData, token);
+            console.log('Task creation response:', response);
 
-            // Reset form after successful submission
-            setTitle('');
-            setDescription('');
-            setDueDate('');
-            setError(''); // Clear any previous errors
-        } catch (err) {
-            // Error handling
-            const errorMessage = err.response ? err.response.data.message : 'An error occurred. Please try again.';
-            setError(errorMessage); // Set the error message for feedback
+            if (response.status === 201) {
+                console.log("Task created successfully!");
+                setTitle('');
+                setDescription('');
+                setDueDate('');
+                setError('');
+            } else {
+                setError(`Failed to create task. Server response: ${response.message || 'Unknown error'}`);
+            }
+        } catch (error) {
+            console.error("API Error:", error);
+            setError("An error occurred while creating the task.");
         }
     };
 
     return (
-        <form
-            onSubmit={handleSubmit}
-            className="w-full max-w-lg bg-white shadow-lg rounded-lg p-6 mx-auto"
-        >
+        <form onSubmit={handleSubmit} className="w-full max-w-lg bg-white shadow-lg rounded-lg p-6 mx-auto">
             <h2 className="text-lg font-bold text-pink-600 mb-4">Create a New Task</h2>
-            {error && <p className="text-red-500 mb-4">{error}</p>} {/* Display error if any */}
+            {error && <p className="text-red-600">{error}</p>}
             <input
                 type="text"
+                placeholder="Title"
                 value={title}
                 onChange={(e) => setTitle(e.target.value)}
-                placeholder="Task Title"
                 required
-                className="w-full p-2 border border-pink-300 rounded mb-4 focus:outline-none focus:ring-2 focus:ring-pink-500"
+                className="w-full p-2 mb-4 border border-gray-300 rounded"
             />
             <textarea
+                placeholder="Description"
                 value={description}
                 onChange={(e) => setDescription(e.target.value)}
-                placeholder="Description"
-                required
-                className="w-full p-2 border border-pink-300 rounded mb-4 focus:outline-none focus:ring-2 focus:ring-pink-500"
+                className="w-full p-2 mb-4 border border-gray-300 rounded"
             />
             <input
                 type="date"
                 value={dueDate}
                 onChange={(e) => setDueDate(e.target.value)}
                 required
-                className="w-full p-2 border border-pink-300 rounded mb-4 focus:outline-none focus:ring-2 focus:ring-pink-500"
+                className="w-full p-2 mb-4 border border-gray-300 rounded"
             />
-            <button
-                type="submit"
-                className="w-full bg-pink-600 text-white font-bold py-2 rounded hover:bg-pink-500 transition duration-200"
-            >
-                Create Task
-            </button>
+            <button type="submit" className="bg-pink-600 text-white p-2 rounded">Create Task</button>
         </form>
     );
 };

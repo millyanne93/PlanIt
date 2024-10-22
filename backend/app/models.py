@@ -25,3 +25,15 @@ class Task(db.Model):
     priority = db.Column(Enum('Low', 'Medium', 'High', name='priority_enum'), default='Medium')
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
+
+    def to_dict(self):
+        return {
+            'id': self.id,
+            'title': self.title,
+            'description': self.description,
+            'due_date': self.due_date.strftime('%Y-%m-%d') if self.due_date else None,
+            'status': self.status,
+            'priority': self.priority,
+            'user_id': self.user_id,
+            'created_at': self.created_at.strftime('%Y-%m-%d %H:%M:%S'),
+        }
