@@ -1,55 +1,77 @@
 import React, { useEffect, useContext, useState } from 'react';
 import { AuthContext } from '../context/AuthContext';
-import { getTasks } from '../api';
+import { getTasks, updateTask } from '../api';
 
-const TaskList = () => {
+const TaskList = ({ tasks }) => {
     const { token } = useContext(AuthContext);
-    const [tasks, setTasks] = useState([]);
-    const [error, setError] = useState(null);  // Add state to handle errors
+    const [taskList, setTaskList] = useState([]); // Renamed from `tasks` to `taskList`
+    const [error, setError] = useState(null);
 
+    // Fetch tasks from the backend
     useEffect(() => {
         const fetchTasks = async () => {
             try {
-                console.log('Token being sent:', token);  // Log token to check if it's being passed correctly
                 const data = await getTasks(token);
-                setTasks(data);
+                setTaskList(data); // Updated to `taskList`
             } catch (error) {
-                console.error('Failed to fetch tasks:', error.message);  // Log the error message
-                setError(error.message);  // Set error in state
+                setError(error.message);
             }
         };
 
         if (token) {
-            fetchTasks();  // Only fetch tasks if the token is available
-        } else {
-            console.error('Token is missing');
-            setError('Token is missing');  // Display an error message if no token
+            fetchTasks();
         }
     }, [token]);
 
-    return (
-        <div className="tasklist-container p-6 bg-gray-50 rounded-lg shadow-lg">
-            <h2 className="text-2xl font-bold text-pink-600 mb-4">Your Tasks</h2>
+    // Update task status
+    const handleStatusChange = async (taskId, status) => {
+        try {
+            await updateTask(taskId, { status }, token);
+            setTaskList(taskList.map(task => task.id === taskId ? { ...task, status } : task)); // Updated to `taskList`
+        } catch (error) {
+            setError(error.message);
+        }
+    };
 
-            {/* Display error message if any */}
-            {error ? (
-                <p className="text-red-600">{error}</p>
-            ) : (
-                <ul className="space-y-4">
-                    {tasks.length > 0 ? (
-                        tasks.map((task) => (
-                            <li key={task.id} className="p-4 bg-white border border-gray-200 rounded-lg shadow-sm hover:shadow-md transition-shadow duration-200">
-                                <h3 className="text-xl font-semibold text-pink-500">{task.title}</h3>
-                                <p className="text-gray-700">{task.description}</p>
-                                <p className="text-gray-500">Due: <span className="font-semibold">{new Date(task.due_date).toLocaleDateString()}</span></p>
-                                <p className="text-gray-500">Status: <span className={`font-semibold ${task.status === 'completed' ? 'text-green-600' : 'text-red-600'}`}>{task.status}</span></p>
+    const columns = {
+        "To Do": taskList.filter(task => task.status === "To Do"), // Updated to `taskList`
+        "In Progress": taskList.filter(task => task.status === "In Progress"),
+        "Completed": taskList.filter(task => task.status === "Completed"),
+    };
+
+    return (
+        <div className="flex space-x-4 p-6 bg-gray-100 rounded-lg shadow-lg overflow-x-auto">
+            {error && <p className="text-red-600">{error}</p>}
+            {Object.entries(columns).map(([columnName, tasksInColumn]) => (
+                <div key={columnName} className="flex-1 min-w-[250px] p-4 bg-gray-50 rounded-lg shadow-md">
+                    <h2 className="text-lg font-bold text-gray-700 mb-4">{columnName}</h2>
+                    <ul className="space-y-4">
+                        {tasksInColumn.length > 0 ? tasksInColumn.map(task => (
+                            <li key={task.id} className="p-4 bg-white border border-gray-200 rounded-lg shadow-sm">
+                                <h3 className="text-md font-semibold text-gray-800">{task.title}</h3>
+                                <p className="text-sm text-gray-600">{task.description}</p>
+                                <p className="text-sm text-gray-500">Due: {new Date(task.due_date).toLocaleDateString()}</p>
+                                <div className="mt-2 flex space-x-2">
+                                    <button
+                                        className="bg-blue-500 text-white p-1 rounded text-xs"
+                                        onClick={() => handleStatusChange(task.id, "In Progress")}
+                                        disabled={task.status === "In Progress"}>
+                                        Move to In Progress
+                                    </button>
+                                    <button
+                                        className="bg-green-500 text-white p-1 rounded text-xs"
+                                        onClick={() => handleStatusChange(task.id, "Completed")}
+                                        disabled={task.status === "Completed"}>
+                                        Mark as Completed
+                                    </button>
+                                </div>
                             </li>
-                        ))
-                    ) : (
-                        <p className="text-gray-600">No tasks available.</p>
-                    )}
-                </ul>
-            )}
+                        )) : (
+                            <p className="text-gray-500">No tasks in this column.</p>
+                        )}
+                    </ul>
+                </div>
+            ))}
         </div>
     );
 };

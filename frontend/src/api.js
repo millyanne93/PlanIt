@@ -58,3 +58,37 @@ export const getTasks = async (token) => {
 
     return response.json();
 };
+
+export const updateTask = async (taskId, formData, token) => {
+    const response = await fetch(`${API_URL}/tasks/${taskId}`, {
+        method: 'PUT',
+        headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`,
+        },
+        body: JSON.stringify(formData),
+    });
+
+    if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || 'Error updating task');
+    }
+
+    return response.json();
+};
+
+export const deleteTask = async (taskId, token) => {
+    const response = await fetch(`${API_URL}/tasks/${taskId}`, {
+        method: 'DELETE',
+        headers: {
+            'Authorization': `Bearer ${token}`,
+        },
+    });
+
+    if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || 'Error deleting task');
+    }
+
+    return response.json();
+};
