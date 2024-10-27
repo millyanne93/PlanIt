@@ -1,39 +1,80 @@
-from app import db
-from datetime import datetime
 from werkzeug.security import generate_password_hash, check_password_hash
-from sqlalchemy import Enum
+from datetime import datetime
+from . import mongo
+from bson.objectid import ObjectId  # Use this to handle MongoDB ObjectIds
 
-class User(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    username = db.Column(db.String(80), unique=True, nullable=False)
-    email = db.Column(db.String(120), unique=True, nullable=False)  # Changed to nullable=False
-    password_hash = db.Column(db.String(128), nullable=False)
-    tasks = db.relationship('Task', backref='user', lazy=True)
+class User:
+    @staticmethod
+    def create_user(username, email, password):
+        password_hash = generate_password_hash(password)
+        user_data = {
+            "username": username,
+            "email": email,
+            "password_hash": password_hash,
+            "tasks": []
+        }
+        return mongo.db.users.insert_one(user_data)
+    
+    @staticmethod
+    def find_by_username(username):
+        return mongo.db.users.find_one({"username": username})
 
-    def set_password(self, password):
-        self.password_hash = generate_password_hash(password)
+    @staticmethod
+    def check_password(stored_password, password):
+        return check_password_hash(stored_password, password)
 
-    def check_password(self, password):
-        return check_password_hash(self.password_hash, password)
 
-class Task(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    title = db.Column(db.String(120), nullable=False)
-    description = db.Column(db.Text)
-    due_date = db.Column(db.DateTime, nullable=True)
-    status = db.Column(Enum('Pending', 'Completed', name='status_enum'), default='Pending')
-    priority = db.Column(Enum('Low', 'Medium', 'High', name='priority_enum'), default='Medium')
-    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
-    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+class Task:
+    @staticmethod
+    def create_task(user_id, title, description, due_date, status="Pending", priority="Medium"):
+        task_data = {
+            "title": title,
+            "description": description,
+            "due_date": due_date,
+            "status": status,
+            "priority": priority,
+            "user_id": user_id,
+            "created_at": datetime.utcnow()
+        }
+        return mongo.db.tasks.insert_one(task_data)
 
-    def to_dict(self):
+    @staticmethod
+    def get_tasks_by_user(user_id):
+        return list(mongo.db.tasks.find({"user_id": user_id}))
+
+    @staticmethod
+    def get_task_by_id(task_id):
+        # Ensure task_id is a valid ObjectId
+        if not ObjectId.is_valid(task_id):
+            return None
+
+        task = mongo.db.tasks.find_one({"_id": ObjectId(task_id)})
+        return task  # Returns None if task is not found
+
+    @staticmethod
+    def update_task(task_id, update_data):
+        return mongo.db.tasks.update_one({"_id": ObjectId(task_id)}, {"$set": update_data})
+
+    @staticmethod
+    def delete_task(task_id):
+        return mongo.db.tasks.delete_one({"_id": ObjectId(task_id)})
+
+    @staticmethod
+    def mark_task_as_completed(task_id):
+        return mongo.db.tasks.update_one(
+            {"_id": ObjectId(task_id)},
+            {"$set": {"status": "Completed"}}
+        )
+
+    @staticmethod
+    def to_dict(task):
         return {
-            'id': self.id,
-            'title': self.title,
-            'description': self.description,
-            'due_date': self.due_date.strftime('%Y-%m-%d') if self.due_date else None,
-            'status': self.status,
-            'priority': self.priority,
-            'user_id': self.user_id,
-            'created_at': self.created_at.strftime('%Y-%m-%d %H:%M:%S'),
+            'id': str(task['_id']),
+            'title': task['title'],
+            'description': task['description'],
+            'due_date': task['due_date'].strftime('%Y-%m-%d') if task['due_date'] else None,
+            'status': task['status'],
+            'priority': task['priority'],
+            'user_id': task['user_id'],
+            'created_at': task['created_at'].strftime('%Y-%m-%d %H:%M:%S'),
         }
