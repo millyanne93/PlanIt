@@ -11,7 +11,7 @@ const Features = () => {
   ];
 
   return (
-    <div className="py-20 px-4">
+    <div className="bg-gradient-to-r from-pink-200 to-pink-100 py-20 px-4">
       <h1 className="text-5xl font-bold text-pink-600 text-center mb-10">Discover the Powerful Features of PlanIt</h1>
       <p className="text-lg text-center mb-16">Boost your productivity with tools designed to help you plan and achieve more.</p>
       <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8 max-w-6xl mx-auto">

@@ -16,7 +16,7 @@ function FAQ() {
   };
 
   return (
-    <div className="bg-white text-black py-10 px-5">
+    <div className="bg-gradient-to-r from-pink-200 to-pink-100 text-black py-10 px-5">
       <div className="max-w-4xl mx-auto">
         <h1 className="text-4xl font-bold text-center mb-8">Frequently Asked Questions</h1>
         <div className="space-y-4">

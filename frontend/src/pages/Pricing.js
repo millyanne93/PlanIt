@@ -20,7 +20,7 @@ const Pricing = () => {
   ];
 
   return (
-    <div className="py-20 px-4">
+    <div className="bg-gradient-to-r from-pink-200 to-pink-100 py-20 px-4">
       <h1 className="text-5xl font-bold text-pink-600 text-center mb-10">Choose a Plan that Works for You</h1>
       <p className="text-lg text-center mb-16">Select from our range of plans to find the perfect fit for your needs.</p>
       <div className="grid md:grid-cols-3 gap-8 max-w-6xl mx-auto">

@@ -4,7 +4,7 @@ import { faEnvelope, faPhone, faMapMarkerAlt } from '@fortawesome/free-solid-svg
 
 const Contact = () => {
   return (
-    <div className="py-20 px-4">
+    <div className="bg-gradient-to-r from-pink-200 to-pink-100 py-20 px-4">
       <h1 className="text-5xl font-bold text-pink-600 text-center mb-10">Get in Touch</h1>
       <p className="text-lg text-center mb-16">We're here to help! Reach out with any questions or feedback.</p>
       

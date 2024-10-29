@@ -4,6 +4,8 @@ import { Swiper, SwiperSlide } from 'swiper/react';
 import 'swiper/css'; 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faUser } from '@fortawesome/free-solid-svg-icons';
+import heroBackground from '../assets/images/hero-background.webp';
+import actionBackground from '../assets/images/action.webp';
 
 const HomePage = () => {
   return (
@@ -23,7 +25,12 @@ const HomePage = () => {
 
       {/* Hero Section with Gradient Background */}
       <header
-        className="relative h-screen text-center flex flex-col justify-center items-center bg-gradient-to-r from-pink-600 to-purple-600"
+        className="relative h-screen text-center flex flex-col justify-center items-center bg-cover bg-center"
+        style={{
+          backgroundImage: `url(${heroBackground})`,
+          backgroundBlendMode: "overlay",
+          backgroundColor: "rgba(0, 0, 0, 0.7)"
+        }}
       >
         <div className="relative z-10 text-white">
           <h1 className="text-6xl font-bold mb-4">Plan It. Do It. Achieve It!</h1>
@@ -47,8 +54,8 @@ const HomePage = () => {
           spaceBetween={20}
           pagination={{ clickable: true }}
           breakpoints={{
-            640: { slidesPerView: 2 },
-            1024: { slidesPerView: 3 },
+            640: { slidesPerView: 2.5 },
+            1024: { slidesPerView: 3.5 },
           }}
         >
           {[
@@ -57,12 +64,12 @@ const HomePage = () => {
             { icon: 'fas fa-chart-line', title: 'Performance Tracking', description: 'Track your progress over time.' },
           ].map((feature, index) => (
             <SwiperSlide key={index}>
-              <div className="bg-gradient-to-r from-pink-300 to-pink-100 shadow-xl rounded-lg p-6 text-center hover:shadow-2xl transition transform hover:scale-105 h-64 flex flex-col justify-between">
-                <div className="bg-pink-600 rounded-full p-4 inline-block mb-4">
-                  <i className={`${feature.icon} text-black text-3xl`}></i>
+              <div className="bg-gradient-to-r from-pink-300 to-pink-100 shadow-xl rounded-lg p-3 text-center hover:shadow-2xl transition transform hover:scale-105 h-48 flex flex-col justify-between">
+                <div className="bg-pink-600 rounded-full p-3 inline-block mb-3">
+                  <i className={`${feature.icon} text-black text-2xl`}></i> {/* Smaller icon size */}
                 </div>
-                <h3 className="text-black font-semibold mb-3 text-xl">{feature.title}</h3>
-                <p className="text-black">{feature.description}</p>
+                <h3 className="text-black font-semibold mb-2 text-lg">{feature.title}</h3> {/* Smaller title */}
+                <p className="text-black text-sm">{feature.description}</p> {/* Smaller description */}
               </div>
             </SwiperSlide>
           ))}
@@ -94,13 +101,25 @@ const HomePage = () => {
       </section>
 
       {/* Call to Action */}
-      <section className="cta py-16 bg-pink-600 text-center text-white">
+      <section
+        className="cta py-16 text-center text-white"
+        style={{
+          backgroundImage: `url(${actionBackground})`,
+          backgroundSize: 'cover',
+          backgroundPosition: 'center',
+          backgroundBlendMode: 'overlay', // Softens image with the background color
+          backgroundColor: 'rgba(0, 0, 0, 0.7)',
+        }}
+      >
         <h2 className="text-3xl font-bold mb-4">Join Thousands of Users Improving Their Productivity!</h2>
         <p className="mb-6">Sign up today and start organizing your tasks more effectively.</p>
-        <Link to="/signup" className="bg-white text-pink-600 px-8 py-3 rounded-full hover:bg-gray-100 transition transform hover:scale-105">
+        <Link
+          to="/signup"
+          className="bg-white text-pink-600 px-8 py-3 rounded-full hover:bg-gray-100 transition transform hover:scale-105"
+        >
           Get Started
         </Link>
-      </section>
+      </section> 
 
     {/* Footer Section */}
     <footer className="bg-gray-800 text-white py-6"> {/* Further reduced padding */}
@@ -110,7 +129,7 @@ const HomePage = () => {
           <p className="text-sm">Your journey to productivity starts here!</p> {/* Smaller text */}
         </div>
         <div>
-          <h3 className="font-semibold text-base">Resources</h3> {/* Reduced text size */}
+          <h3 className="font-semibold text-base">RESOURCES</h3> {/* Reduced text size */}
           <ul className="space-y-1"> {/* Reduced spacing between list items */}
             <li><Link to="/about" className="hover:text-pink-600 transition">About Us</Link></li>
             <li><Link to="/contact" className="hover:text-pink-600 transition">Contact</Link></li>
@@ -118,7 +137,7 @@ const HomePage = () => {
           </ul>
         </div>
         <div>
-          <h3 className="font-semibold text-base">Company</h3> {/* Reduced text size */}
+          <h3 className="font-semibold text-base">COMPANY</h3> {/* Reduced text size */}
           <ul className="space-y-1"> {/* Reduced spacing between list items */}
             <li><Link to="/careers" className="hover:text-pink-600 transition">Careers</Link></li>
             <li><Link to="/blog" className="hover:text-pink-600 transition">Blog</Link></li>
@@ -126,7 +145,7 @@ const HomePage = () => {
           </ul>
         </div>
         <div>
-          <h3 className="font-semibold text-base">Follow Us</h3> {/* Reduced text size */}
+          <h3 className="font-semibold text-base">FOLLOW US</h3> {/* Reduced text size */}
           <div className="flex space-x-2"> {/* Reduced space between icons */}
             <a href="https://facebook.com" className="hover:text-pink-600 transition"><i className="fab fa-facebook-f"></i></a>
             <a href="https://twitter.com" className="hover:text-pink-600 transition"><i className="fab fa-twitter"></i></a>

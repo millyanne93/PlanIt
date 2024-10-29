@@ -4,7 +4,7 @@ import TaskList from '../components/TaskList'; // Component for displaying tasks
 
 const Dashboard = () => {
     return (
-        <div className="min-h-screen bg-gray-100 flex flex-col items-center py-8">
+        <div className="min-h-screen bg-gradient-to-r from-pink-200 to-pink-100 flex flex-col items-center py-8">
             <header className="w-full max-w-2xl text-center mb-6 p-6 bg-white shadow-lg rounded-lg">
                 <h1 className="text-3xl font-bold text-pink-600">Your Dashboard</h1>
                 <p className="text-gray-600 mt-2">Manage your tasks effectively.</p>
