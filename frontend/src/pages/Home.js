@@ -9,9 +9,9 @@ const HomePage = () => {
   return (
     <div>
       {/* Sticky Navbar */}
-      <nav className="fixed top-0 w-full bg-white shadow-lg z-50">
+      <nav className="fixed top-0 w-full bg-gradient-to-r from-pink-400 to-purple-200 shadow-lg z-50">
         <div className="container mx-auto flex justify-between items-center py-4">
-          <Link to="/" className="text-pink-600 text-2xl font-bold">PlanIt</Link>
+          <Link to="/" className="text-pink-900 text-2xl font-semi-bold">PlanIt</Link>
           <div className="space-x-4">
             <Link to="/features" className="hover:text-pink-600 transition">Features</Link>
             <Link to="/pricing" className="hover:text-pink-600 transition">Pricing</Link>
@@ -25,7 +25,6 @@ const HomePage = () => {
       <header
         className="relative h-screen text-center flex flex-col justify-center items-center bg-gradient-to-r from-pink-600 to-purple-600"
       >
-        <div className="absolute inset-0 bg-black opacity-40"></div> {/* Subtle overlay */}
         <div className="relative z-10 text-white">
           <h1 className="text-6xl font-bold mb-4">Plan It. Do It. Achieve It!</h1>
           <p className="text-lg mb-6">Streamline your tasks and get more done with your personal task management tool.</p>
