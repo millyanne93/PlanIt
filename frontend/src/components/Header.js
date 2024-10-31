@@ -11,8 +11,8 @@ const Header = () => {
     };
 
     return (
-        <header className="bg-gradient-to-r from-pink-400 to-purple-200 p-4 flex justify-between items-center">
-            <h1 className="text-pink-900 text-2xl font-semibold">PlanIt</h1>
+        <header className="bg-white p-4 flex justify-between items-center">
+            <h1 className="text-pink-700 text-2xl font-bold">PlanIt</h1>
             <nav className="relative">
                 <div className="flex space-x-4">
                     {/* Home link is always visible */}

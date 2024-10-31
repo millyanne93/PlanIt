@@ -3,17 +3,18 @@ import { Link } from 'react-router-dom';
 import { Swiper, SwiperSlide } from 'swiper/react'; 
 import 'swiper/css'; 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faUser } from '@fortawesome/free-solid-svg-icons';
 import heroBackground from '../assets/images/hero-background.webp';
 import actionBackground from '../assets/images/action.webp';
+import Features from './Features';
+import { faBullseye, faHandshake, faUser, faChartPie } from '@fortawesome/free-solid-svg-icons';
 
 const HomePage = () => {
   return (
     <div>
       {/* Sticky Navbar */}
-      <nav className="fixed top-0 w-full bg-gradient-to-r from-pink-400 to-purple-200 shadow-lg z-50">
+      <nav className="fixed top-0 w-full bg-white shadow-lg z-50">
         <div className="container mx-auto flex justify-between items-center py-4">
-          <Link to="/" className="text-pink-900 text-2xl font-semi-bold">PlanIt</Link>
+          <Link to="/" className="text-pink-700 text-2xl font-bold">PlanIt</Link>
           <div className="space-x-4">
             <Link to="/features" className="hover:text-pink-600 transition">Features</Link>
             <Link to="/pricing" className="hover:text-pink-600 transition">Pricing</Link>
@@ -45,51 +46,58 @@ const HomePage = () => {
           </div>
         </div>
       </header>
-
-      {/* Features Section */}
-      <section className="features mb-16">
-        <h2 className="text-pink-600 text-4xl font-bold text-center mb-8">Key Features</h2>
-        <Swiper
-          slidesPerView={1}
-          spaceBetween={20}
-          pagination={{ clickable: true }}
-          breakpoints={{
-            640: { slidesPerView: 2.5 },
-            1024: { slidesPerView: 3.5 },
-          }}
-        >
-          {[
-            { icon: 'fas fa-tasks', title: 'Task Management', description: 'Manage tasks with ease and efficiency.' },
-            { icon: 'fas fa-bell', title: 'Reminders', description: 'Stay on track with deadline reminders.' },
-            { icon: 'fas fa-chart-line', title: 'Performance Tracking', description: 'Track your progress over time.' },
-          ].map((feature, index) => (
-            <SwiperSlide key={index}>
-              <div className="bg-gradient-to-r from-pink-300 to-pink-100 shadow-xl rounded-lg p-3 text-center hover:shadow-2xl transition transform hover:scale-105 h-48 flex flex-col justify-between">
-                <div className="bg-pink-600 rounded-full p-3 inline-block mb-3">
-                  <i className={`${feature.icon} text-black text-2xl`}></i> {/* Smaller icon size */}
-                </div>
-                <h3 className="text-black font-semibold mb-2 text-lg">{feature.title}</h3> {/* Smaller title */}
-                <p className="text-black text-sm">{feature.description}</p> {/* Smaller description */}
-              </div>
-            </SwiperSlide>
-          ))}
-        </Swiper>
+      {/* Replace Overview Section with Features Component */}
+      <section className="features py-16 bg-gradient-to-r from-pink-200 to-pink-100">
+        <Features />
       </section> 
+
+      {/* Benefits Section */}
+      <section className="benefits bg-gradient-to-r from-pink-200 to-pink-100">
+        <h2 className="text-pink-600 text-4xl font-bold text-center mb-8">Why Choose PlanIt?</h2>
+        <div className="container mx-auto flex flex-wrap justify-center gap-8 bg-gradient-to-r from-pink-200 to-pink-100">
+          {[
+            {
+              icon: faBullseye,
+              title: 'Enhanced Focus & Efficiency',
+              description: 'PlanIt is designed to streamline your workflow, helping you stay focused on priorities and reduce distractions for higher efficiency.',
+            },
+            {
+              icon: faHandshake,
+              title: 'Seamless Collaboration',
+              description: 'Bring teams together with easy sharing and communication features, ensuring everyone is aligned and progress is transparent.',
+            },
+            {
+              icon: faChartPie,
+              title: 'Data-Driven Insights',
+              description: 'Use performance data and insights to improve productivity, spot trends, and make informed decisions.',
+            },
+          ].map((benefit, index) => (
+            <div key={index} className="flex items-center space-x-4 p-4">
+              <FontAwesomeIcon icon={benefit.icon} className="text-pink-600 text-3xl" />
+              <div>
+                <h3 className="text-black font-semibold text-lg">{benefit.title}</h3>
+                <p className="text-gray-700 text-sm">{benefit.description}</p>
+              </div>
+            </div>
+          ))}
+        </div>
+      </section>
 
       {/* Testimonials Section */}
       <section className="testimonials bg-gradient-to-r from-pink-200 to-pink-100 py-16">
         <h2 className="text-pink-600 text-4xl font-bold text-center mb-8">What Our Users Say</h2>
         <Swiper slidesPerView={1} spaceBetween={10} pagination={{ clickable: true }}>
           {[
-            { name: 'John Doe', review: 'This app transformed how I manage tasks!', image: '/path/to/john.jpg', rating: 5 },
+            { name: 'John Doe', review: 'This app transformed how I manage tasks! I definitely recommend!', image: '/path/to/john.jpg', rating: 5 },
             { name: 'Jane Smith', review: 'Task management has never been easier!', image: '/path/to/jane.jpg', rating: 4 },
           ].map((testimonial, index) => (
             <SwiperSlide key={index}>
-              <div className="bg-white shadow-lg rounded-lg p-6 flex items-center">
-                <FontAwesomeIcon icon={faUser} className="text-gray-500 text-3xl" />
+              {/* Boxed testimonial with gradient */}
+              <div className="bg-gradient-to-r from-pink-500 via-pink-300 to-pink-200 shadow-lg rounded-lg p-6 flex items-center gap-4 max-w-md mx-auto">
+                <FontAwesomeIcon icon={faUser} className="text-white text-3xl" />
                 <div>
-                  <h3 className="text-pink-600 font-semibold">{testimonial.name}</h3>
-                  <p className="text-gray-700">{testimonial.review}</p>
+                  <h3 className="text-pink-900 font-semibold">{testimonial.name}</h3>
+                  <p className="text-black-100">{testimonial.review}</p>
                   <div className="text-yellow-400">
                     {'★'.repeat(testimonial.rating)}{'☆'.repeat(5 - testimonial.rating)}
                   </div>
