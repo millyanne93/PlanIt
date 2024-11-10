@@ -122,3 +122,29 @@ def get_task_by_id(task_id):
     except Exception as e:
         logging.error(f"Error retrieving task by ID {task_id}: {e}")
         return None
+@tasks_bp.route('/tasks/<task_id>/set_reminder', methods=['PUT'])
+@jwt_required()
+def set_reminder(task_id):
+    user_id = get_jwt_identity()
+    data = request.get_json()
+    reminder = data.get('reminder')
+    
+    # Check if the reminder is valid
+    try:
+        datetime.strptime(reminder, '%Y-%m-%d %H:%M')
+    except ValueError:
+        return jsonify({"error": "Invalid reminder format. Expected format is YYYY-MM-DD HH:MM"}), 400
+
+    Task.update_task(task_id, {"reminder": reminder})
+    return jsonify(message="Reminder set successfully!"), 200
+
+@tasks_bp.route('/tasks/<task_id>/share', methods=['PUT'])
+@jwt_required()
+def share_task(task_id):
+    user_id = get_jwt_identity()
+    data = request.get_json()
+    shared_user_id = data.get('shared_user_id')
+
+    # Add shared user to task
+    Task.update_task(task_id, {"$addToSet": {"shared_with": shared_user_id}})
+    return jsonify(message="Task shared successfully!"), 200

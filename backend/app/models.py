@@ -26,7 +26,7 @@ class User:
 
 class Task:
     @staticmethod
-    def create_task(user_id, title, description, due_date, status="Pending", priority="Medium"):
+    def create_task(user_id, title, description, due_date, reminder=None, shared_with=None,status="Pending", priority="Medium"):
         task_data = {
             "title": title,
             "description": description,
@@ -34,6 +34,8 @@ class Task:
             "status": status,
             "priority": priority,
             "user_id": user_id,
+            "reminder": reminder,  # New field for reminders
+            "shared_with": shared_with or [], 
             "created_at": datetime.utcnow()
         }
         return mongo.db.tasks.insert_one(task_data)
@@ -76,5 +78,7 @@ class Task:
             'status': task['status'],
             'priority': task['priority'],
             'user_id': task['user_id'],
+            'reminder': task.get('reminder'),  # Accessed safely with .get
+            'shared_with': task.get('shared_with', []),
             'created_at': task['created_at'].strftime('%Y-%m-%d %H:%M:%S'),
         }
