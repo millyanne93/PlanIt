@@ -7,6 +7,8 @@ const TaskForm = () => {
     const [title, setTitle] = useState('');
     const [description, setDescription] = useState('');
     const [dueDate, setDueDate] = useState('');
+    const [reminder, setReminder] = useState('');
+    const [sharedWith, setSharedWith] = useState(''); // New field for sharing
     const [error, setError] = useState('');
 
     const handleSubmit = async (event) => {
@@ -22,7 +24,9 @@ const TaskForm = () => {
         const formData = {
             title: title,
             description: description,
-            due_date: formattedDueDate
+            due_date: new Date(dueDate).toISOString().split('T')[0],
+            reminder,
+            shared_with: sharedWith.split(',').map(id => id.trim())  // Convert comma-separated list to array
         };
 
         console.log('Form Data being sent to the API:', formData);
@@ -37,6 +41,8 @@ const TaskForm = () => {
                 setTitle('');
                 setDescription('');
                 setDueDate('');
+                setReminder('');
+                setSharedWith('');
                 setError('');
             } else {
                 setError(`Failed to create task. Server response: ${response.message || 'Unknown error'}`);
@@ -72,6 +78,21 @@ const TaskForm = () => {
                 required
                 className="w-full p-2 mb-4 border border-gray-300 rounded"
             />
+            <input
+                type="datetime-local"
+                placeholder="Reminder"
+                value={reminder}
+                onChange={(e) => setReminder(e.target.value)}
+                className="form-input"
+            />
+            <input
+                type="text"
+                placeholder="Share with (user IDs, comma-separated)"
+                value={sharedWith}
+                onChange={(e) => setSharedWith(e.target.value)}
+                className="form-input"
+            />
+            
             <button type="submit" className="bg-pink-600 text-white p-2 rounded">Create Task</button>
         </form>
     );
