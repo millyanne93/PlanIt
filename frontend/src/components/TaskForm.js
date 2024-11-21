@@ -54,45 +54,46 @@ const TaskForm = () => {
     };
 
     return (
-        <form onSubmit={handleSubmit} className="w-full max-w-lg bg-white shadow-lg rounded-lg p-6 mx-auto">
-            <h2 className="text-lg font-bold text-pink-600 mb-4">Create a New Task</h2>
+        <form onSubmit={handleSubmit} className="bg-white shadow-md rounded-lg p-6 grid grid-cols-1 gap-4">
+            <h2 className="text-lg font-bold text-pink-600 mb-2">Create a New Task</h2>
             {error && <p className="text-red-600">{error}</p>}
-            <input
-                type="text"
-                placeholder="Title"
-                value={title}
-                onChange={(e) => setTitle(e.target.value)}
-                required
-                className="w-full p-2 mb-4 border border-gray-300 rounded"
-            />
+            <div className="grid grid-cols-2 gap-4">
+                <input
+                    type="text"
+                    placeholder="Title"
+                    value={title}
+                    onChange={(e) => setTitle(e.target.value)}
+                    required
+                    className="w-full p-2 border border-gray-300 rounded"
+                />
+                <input
+                    type="date"
+                    value={dueDate}
+                    onChange={(e) => setDueDate(e.target.value)}
+                    required
+                    className="w-full p-2 border border-gray-300 rounded"
+                />
+            </div>
             <textarea
                 placeholder="Description"
                 value={description}
                 onChange={(e) => setDescription(e.target.value)}
-                className="w-full p-2 mb-4 border border-gray-300 rounded"
-            />
-            <input
-                type="date"
-                value={dueDate}
-                onChange={(e) => setDueDate(e.target.value)}
-                required
-                className="w-full p-2 mb-4 border border-gray-300 rounded"
+                className="w-full p-2 border border-gray-300 rounded"
             />
             <input
                 type="datetime-local"
                 placeholder="Reminder"
                 value={reminder}
                 onChange={(e) => setReminder(e.target.value)}
-                className="form-input"
+                className="w-full p-2 border border-gray-300 rounded"
             />
             <input
                 type="text"
                 placeholder="Share with (user IDs, comma-separated)"
                 value={sharedWith}
                 onChange={(e) => setSharedWith(e.target.value)}
-                className="form-input"
+                className="w-full p-2 border border-gray-300 rounded"
             />
-            
             <button type="submit" className="bg-pink-600 text-white p-2 rounded">Create Task</button>
         </form>
     );
