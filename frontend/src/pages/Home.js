@@ -6,6 +6,9 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import heroBackground from '../assets/images/hero-background.webp';
 import actionBackground from '../assets/images/action.webp';
 import Features from './Features';
+import Pricing from './Pricing';
+import AboutUs from './AboutUs';
+import FAQ from './FAQ';
 import { faBullseye, faHandshake, faUser, faChartPie } from '@fortawesome/free-solid-svg-icons';
 
 const HomePage = () => {
@@ -24,7 +27,7 @@ const HomePage = () => {
         </div>
       </nav>
 
-      {/* Hero Section with Gradient Background */}
+      {/* Hero Section */}
       <header
         className="relative h-screen text-center flex flex-col justify-center items-center bg-cover bg-center"
         style={{
@@ -46,7 +49,7 @@ const HomePage = () => {
           </div>
         </div>
       </header>
-      {/* Replace Overview Section with Features Component */}
+      {/* Features Component */}
       <section className="features py-16 bg-gradient-to-r from-pink-200 to-pink-100">
         <Features />
       </section> 
@@ -83,6 +86,16 @@ const HomePage = () => {
         </div>
       </section>
 
+      {/* About Component */}
+      <section className="about py-16 bg-gradient-to-r from-pink-200 to-pink-100">
+        <AboutUs />
+      </section>
+
+      {/* Pricing Component */}
+      <section className="pricing py-16 bg-gradient-to-r from-pink-200 to-pink-100">
+        <Pricing />
+      </section>
+
       {/* Testimonials Section */}
       <section className="testimonials bg-gradient-to-r from-pink-200 to-pink-100 py-16">
         <h2 className="text-pink-600 text-4xl font-bold text-center mb-8">What Our Users Say</h2>
@@ -108,6 +121,11 @@ const HomePage = () => {
         </Swiper>
       </section>
 
+      {/* FAQ Component */}
+      <section className="faq py-16 bg-gradient-to-r from-pink-200 to-pink-100">
+        <FAQ />
+      </section>
+
       {/* Call to Action */}
       <section
         className="cta py-16 text-center text-white"
@@ -115,7 +133,7 @@ const HomePage = () => {
           backgroundImage: `url(${actionBackground})`,
           backgroundSize: 'cover',
           backgroundPosition: 'center',
-          backgroundBlendMode: 'overlay', // Softens image with the background color
+          backgroundBlendMode: 'overlay', 
           backgroundColor: 'rgba(0, 0, 0, 0.7)',
         }}
       >
@@ -130,43 +148,43 @@ const HomePage = () => {
       </section> 
 
     {/* Footer Section */}
-    <footer className="bg-gray-800 text-white py-6"> {/* Further reduced padding */}
-      <div className="max-w-6xl mx-auto grid grid-cols-2 md:grid-cols-4 gap-3"> {/* Smaller gap */}
+    <footer className="bg-gray-800 text-white py-6"> 
+      <div className="max-w-6xl mx-auto grid grid-cols-2 md:grid-cols-4 gap-3">
         <div>
-          <h3 className="font-semibold text-base">PlanIt</h3> {/* Reduced text size */}
-          <p className="text-sm">Your journey to productivity starts here!</p> {/* Smaller text */}
+          <h3 className="font-semibold text-base">PlanIt</h3> 
+          <p className="text-sm">Your journey to productivity starts here!</p> 
         </div>
         <div>
-          <h3 className="font-semibold text-base">RESOURCES</h3> {/* Reduced text size */}
-          <ul className="space-y-1"> {/* Reduced spacing between list items */}
+          <h3 className="font-semibold text-base">RESOURCES</h3> 
+          <ul className="space-y-1"> 
             <li><Link to="/about" className="hover:text-pink-600 transition">About Us</Link></li>
             <li><Link to="/contact" className="hover:text-pink-600 transition">Contact</Link></li>
             <li><Link to="/faq" className="hover:text-pink-600 transition">FAQ</Link></li>
           </ul>
         </div>
         <div>
-          <h3 className="font-semibold text-base">COMPANY</h3> {/* Reduced text size */}
-          <ul className="space-y-1"> {/* Reduced spacing between list items */}
+          <h3 className="font-bold text-base">COMPANY</h3> 
+          <ul className="space-y-1"> 
             <li><Link to="/careers" className="hover:text-pink-600 transition">Careers</Link></li>
             <li><Link to="/blog" className="hover:text-pink-600 transition">Blog</Link></li>
             <li><Link to="/privacy" className="hover:text-pink-600 transition">Privacy Policy</Link></li>
           </ul>
         </div>
         <div>
-          <h3 className="font-semibold text-base">FOLLOW US</h3> {/* Reduced text size */}
-          <div className="flex space-x-2"> {/* Reduced space between icons */}
+          <h3 className="font-semibold text-base">FOLLOW US</h3> 
+          <div className="flex space-x-2"> 
             <a href="https://facebook.com" className="hover:text-pink-600 transition"><i className="fab fa-facebook-f"></i></a>
             <a href="https://twitter.com" className="hover:text-pink-600 transition"><i className="fab fa-twitter"></i></a>
             <a href="https://linkedin.com" className="hover:text-pink-600 transition"><i className="fab fa-linkedin"></i></a>
           </div>
-          <div className="mt-2"> {/* Reduced margin-top for the app badge */}
+          <div className="mt-2"> 
             <a href="https://play.google.com/store" className="hover:opacity-80 transition">
-              <img src="/path/to/google-play-badge.png" alt="Google Play Badge" className="w-24" /> {/* Further reduced width */}
+              <img src="/path/to/google-play-badge.png" alt="Google Play Badge" className="w-24" /> 
             </a>
           </div>
         </div>
       </div>
-      <p className="text-center mt-3 text-sm">&copy; 2024 PlanIt. All rights reserved.</p> {/* Reduced margin and text size */}
+      <p className="text-center mt-3 text-sm">&copy; 2024 PlanIt. All rights reserved.</p> 
      </footer>
     </div>
   );
