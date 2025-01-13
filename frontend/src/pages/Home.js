@@ -101,7 +101,7 @@ const HomePage = () => {
         <h2 className="text-pink-600 text-4xl font-bold text-center mb-8">What Our Users Say</h2>
         <Swiper slidesPerView={1} spaceBetween={10} pagination={{ clickable: true }}>
           {[
-            { name: 'John Doe', review: 'This app transformed how I manage tasks! I definitely recommend!', image: '/path/to/john.jpg', rating: 5 },
+            { name: 'John Doe', review: 'This app transformed how I manage tasks! I definitely recommend it!', image: '/path/to/john.jpg', rating: 5 },
             { name: 'Jane Smith', review: 'Task management has never been easier!', image: '/path/to/jane.jpg', rating: 4 },
           ].map((testimonial, index) => (
             <SwiperSlide key={index}>
