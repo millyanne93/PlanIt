@@ -1,133 +1,82 @@
-import React, { useEffect, useContext, useState } from 'react';
-import { AuthContext } from '../context/AuthContext';
-import { getTasks, updateTask, deleteTask } from '../api';
+import React, { useState, useContext } from "react";
+import EditTaskModal from "./EditTaskModal";
+import { AuthContext } from "../context/AuthContext";
 
-const TaskList = () => {
-    const { token } = useContext(AuthContext);
-    const [tasks, setTasks] = useState([]);
-    const [error, setError] = useState(null);
-    const [editingTask, setEditingTask] = useState(null);
-    const [editedTitle, setEditedTitle] = useState('');
-    const [editedDescription, setEditedDescription] = useState('');
-    const [editedDueDate, setEditedDueDate] = useState('');
+export default function TaskList({ tasks, onUpdateTask, onDeleteTask }) {
+  const [editingTask, setEditingTask] = useState(null);
+  const [deletingTasks, setDeletingTasks] = useState(new Set());
 
-    useEffect(() => {
-        const fetchTasks = async () => {
-            try {
-                const data = await getTasks(token);
-                setTasks(data);
-            } catch (error) {
-                setError(error.message);
-            }
-        };
+  const handleDelete = async (taskId) => {
+    // Prevent duplicate deletions
+    if (deletingTasks.has(taskId)) return;
 
-        if (token) {
-            fetchTasks();
-        }
-    }, [token]);
+    setDeletingTasks(prev => new Set([...prev, taskId]));
 
-    // Handle marking task as completed
-    const handleCompleteTask = async (taskId) => {
-        try {
-            const updatedTask = { status: 'Completed' };
+    try {
+      await onDeleteTask(taskId);
+    } catch (err) {
+      console.error("Delete error:", err);
+    } finally {
+      setDeletingTasks(prev => {
+        const newSet = new Set(prev);
+        newSet.delete(taskId);
+        return newSet;
+      });
+    }
+  };
 
-            await updateTask(taskId, updatedTask, token);
-            const updatedTasks = tasks.map(task =>
-                task.id === taskId ? { ...task, status: 'Completed' } : task
-            );
-            setTasks(updatedTasks);
-        } catch (error) {
-            setError(error.message);
-        }
-    };
+  return (
+    <div className="grid gap-4">
+      {tasks.map((task, index) => {
+        const taskKey = task._id || `task-${index}`;
+        
+        return (
+          <div
+            key={taskKey}
+            className="bg-white p-4 rounded-xl shadow flex justify-between items-start"
+          >
+            <div>
+              <h3 className="text-lg font-bold">{task.title}</h3>
+              <p className="text-sm text-gray-600">{task.description}</p>
+              {task.due_date && (
+                <p className="text-sm text-gray-500">
+                  Due: {new Date(task.due_date).toLocaleDateString()}
+                </p>
+              )}
+            </div>
+            <div className="flex gap-2">
+              <button
+                className="bg-blue-500 text-white px-3 py-1 rounded hover:bg-blue-600"
+                onClick={() => setEditingTask(task)}
+              >
+                Edit
+              </button>
+              <button
+                className="bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600"
+                onClick={() => {
+                  if (!task._id) {
+                    console.error("Cannot delete task without ID:", task);
+                    alert("Cannot delete this task. Please refresh the page.");
+                    return;
+                  }
+                  handleDelete(task._id);
+                }}
+                disabled={!task._id || deletingTasks.has(task._id)}
+              >
+                {deletingTasks.has(task._id) ? "Deleting..." : "Delete"}
+              </button>
+            </div>
+          </div>
+        );
+      })}
 
-    // Handle task updates
-    const handleUpdateTask = async (taskId) => {
-        const updatedTask = {
-            title: editedTitle,
-            description: editedDescription,
-            due_date: editedDueDate,
-        };
-
-        try {
-            await updateTask(taskId, updatedTask, token);
-            const updatedTasks = tasks.map(task =>
-                task.id === taskId ? { ...task, ...updatedTask } : task
-            );
-            setTasks(updatedTasks);
-            setEditingTask(null);
-        } catch (error) {
-            setError(error.message);
-        }
-    };
-
-    // Handle task deletion
-    const handleDeleteTask = async (taskId) => {
-        try {
-            await deleteTask(taskId, token);
-            setTasks(tasks.filter(task => task.id !== taskId));
-        } catch (error) {
-            setError(error.message);
-        }
-    };
-
-    return (
-       <div className="overflow-x-auto">
-           <h2 className="text-2xl font-bold text-pink-600 mb-4">Your Tasks</h2>
-           {error && <p className="text-red-600">{error}</p>}
-           {tasks.length > 0 ? (
-               <table className="w-full text-left border-collapse border border-gray-300">
-                   <thead className="bg-pink-200 text-pink-800">
-                       <tr>
-                           <th className="p-4 border border-gray-300">Title</th>
-                           <th className="p-4 border border-gray-300">Description</th>
-                           <th className="p-4 border border-gray-300">Due Date</th>
-                           <th className="p-4 border border-gray-300">Status</th>
-                           <th className="p-4 border border-gray-300">Actions</th>
-                       </tr>
-                   </thead>
-                   <tbody>
-                       {tasks.map((task) => (
-                           <tr key={task.id} className="hover:bg-gray-100">
-                               <td className="p-4 border border-gray-300">{task.title}</td>
-                               <td className="p-4 border border-gray-300">{task.description}</td>
-                               <td className="p-4 border border-gray-300">{new Date(task.due_date).toLocaleDateString()}</td>
-                               <td className={`p-4 border border-gray-300 ${task.status === 'Completed' ? 'text-green-600' : 'text-red-600'}`}>
-                                   {task.status}
-                               </td>
-                               <td className="p-4 border border-gray-300">
-                                   <button
-                                       className="bg-blue-500 text-white p-1 rounded"
-                                       onClick={() => {
-                                           setEditingTask(task.id);
-                                           setEditedTitle(task.title);
-                                           setEditedDescription(task.description);
-                                           setEditedDueDate(task.due_date);
-                                       }}>
-                                       Edit
-                                   </button>
-                                   <button
-                                       className="bg-red-500 text-white p-1 rounded ml-2"
-                                       onClick={() => handleDeleteTask(task.id)}>
-                                       Delete
-                                   </button>
-                                   <button
-                                       className="bg-green-500 text-white p-1 rounded ml-2"
-                                       onClick={() => handleCompleteTask(task.id)}
-                                       disabled={task.status === 'Completed'}>
-                                       {task.status === 'Completed' ? 'Completed' : 'Mark as Completed'}
-                                   </button>
-                               </td>
-                           </tr>
-                       ))}
-                   </tbody>
-               </table>
-           ) : (
-               <p className="text-gray-600">No tasks available.</p>
-           )}
-       </div>
-          
-    );
-};
-
-export default TaskList;
+      {editingTask && (
+        <EditTaskModal
+          task={editingTask}
+          onClose={() => setEditingTask(null)}
+          onUpdateTask={onUpdateTask}
+        />
+      )}
+    </div>
+  );
+}

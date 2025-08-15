@@ -1,102 +1,127 @@
-import React, { useState, useContext } from 'react';
-import { AuthContext } from '../context/AuthContext';
-import { createTask } from '../api';
+import React, { useState, useContext } from "react";
+import { AuthContext } from "../context/AuthContext";
 
-const TaskForm = () => {
-    const { token } = useContext(AuthContext);
-    const [title, setTitle] = useState('');
-    const [description, setDescription] = useState('');
-    const [dueDate, setDueDate] = useState('');
-    const [reminder, setReminder] = useState('');
-    const [sharedWith, setSharedWith] = useState(''); // New field for sharing
-    const [error, setError] = useState('');
+export default function TaskForm({ onAddTask }) {
+  const { token } = useContext(AuthContext);
+  const [form, setForm] = useState({
+    title: "",
+    description: "",
+    due_date: "",        // ✅ Changed to snake_case
+    reminder: "",
+    shared_with: "",     // ✅ Changed to snake_case
+  });
+  
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
-    const handleSubmit = async (event) => {
-        event.preventDefault();
+  const handleChange = (e) => {
+    setForm({ ...form, [e.target.name]: e.target.value });
+  };
 
-        if (!title || !dueDate) {
-            setError('Title and Due Date are required');
-            return;
-        }
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setIsSubmitting(true);
+    
+    try {
+      console.log("Submitting task:", form);
+      
+      const response = await fetch("http://localhost:5000/tasks", { // ✅ Fixed URL
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify(form),
+      });
 
-        const formattedDueDate = new Date(dueDate).toISOString().split('T')[0];
+      console.log("Response status:", response.status);
 
-        const formData = {
-            title: title,
-            description: description,
-            due_date: new Date(dueDate).toISOString().split('T')[0],
-            reminder,
-            shared_with: sharedWith.split(',').map(id => id.trim())  // Convert comma-separated list to array
-        };
+      if (!response.ok) {
+        throw new Error(`Failed to create task: ${response.status}`);
+      }
 
-        console.log('Form Data being sent to the API:', formData);
-        console.log('Token being used for authentication:', token);
+      const data = await response.json();
+      console.log("Task created successfully:", data);
+      
+      onAddTask(data);
+      setForm({ 
+        title: "", 
+        description: "", 
+        due_date: "",      // ✅ Changed to snake_case
+        reminder: "", 
+        shared_with: ""    // ✅ Changed to snake_case
+      });
+      
+    } catch (err) {
+      console.error("Error creating task:", err);
+      alert("Failed to create task. Please try again.");
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
 
-        try {
-            const response = await createTask(formData, token);
-            console.log('Task creation response:', response);
-
-            if (response.status === 201) {
-                console.log("Task created successfully!");
-                setTitle('');
-                setDescription('');
-                setDueDate('');
-                setReminder('');
-                setSharedWith('');
-                setError('');
-            } else {
-                setError(`Failed to create task. Server response: ${response.message || 'Unknown error'}`);
-            }
-        } catch (error) {
-            console.error("API Error:", error);
-            setError("An error occurred while creating the task.");
-        }
-    };
-
-    return (
-        <form onSubmit={handleSubmit} className="bg-white shadow-md rounded-lg p-6 grid grid-cols-1 gap-4">
-            <h2 className="text-lg font-bold text-pink-600 mb-2">Create a New Task</h2>
-            {error && <p className="text-red-600">{error}</p>}
-            <div className="grid grid-cols-2 gap-4">
-                <input
-                    type="text"
-                    placeholder="Title"
-                    value={title}
-                    onChange={(e) => setTitle(e.target.value)}
-                    required
-                    className="w-full p-2 border border-gray-300 rounded"
-                />
-                <input
-                    type="date"
-                    value={dueDate}
-                    onChange={(e) => setDueDate(e.target.value)}
-                    required
-                    className="w-full p-2 border border-gray-300 rounded"
-                />
-            </div>
-            <textarea
-                placeholder="Description"
-                value={description}
-                onChange={(e) => setDescription(e.target.value)}
-                className="w-full p-2 border border-gray-300 rounded"
-            />
-            <input
-                type="datetime-local"
-                placeholder="Reminder"
-                value={reminder}
-                onChange={(e) => setReminder(e.target.value)}
-                className="w-full p-2 border border-gray-300 rounded"
-            />
-            <input
-                type="text"
-                placeholder="Share with (user IDs, comma-separated)"
-                value={sharedWith}
-                onChange={(e) => setSharedWith(e.target.value)}
-                className="w-full p-2 border border-gray-300 rounded"
-            />
-            <button type="submit" className="bg-pink-600 text-white p-2 rounded">Create Task</button>
-        </form>
-    );
-};
-
-export default TaskForm;
+  return (
+    <form
+      onSubmit={handleSubmit}
+      className="bg-gradient-to-r from-pink-400 via-pink-500 to-pink-600 text-white p-6 rounded-xl shadow-lg space-y-4 mb-6"
+    >
+      <h2 className="text-xl font-bold">Add Task</h2>
+      
+      <input
+        type="text"
+        name="title"
+        value={form.title}
+        onChange={handleChange}
+        placeholder="Task Title"
+        className="w-full p-3 rounded text-black focus:outline-none focus:ring-2 focus:ring-pink-300"
+        required
+        disabled={isSubmitting}
+      />
+      
+      <textarea
+        name="description"
+        value={form.description}
+        onChange={handleChange}
+        placeholder="Task Description"
+        className="w-full p-3 rounded text-black focus:outline-none focus:ring-2 focus:ring-pink-300"
+        rows="3"
+        disabled={isSubmitting}
+      />
+      
+      <input
+        type="date"
+        name="due_date"      // ✅ Changed to snake_case
+        value={form.due_date}
+        onChange={handleChange}
+        className="w-full p-3 rounded text-black focus:outline-none focus:ring-2 focus:ring-pink-300"
+        disabled={isSubmitting}
+      />
+      
+      <input
+        type="datetime-local"
+        name="reminder"
+        value={form.reminder}
+        onChange={handleChange}
+        className="w-full p-3 rounded text-black focus:outline-none focus:ring-2 focus:ring-pink-300"
+        disabled={isSubmitting}
+      />
+      
+      <input
+        type="text"
+        name="shared_with"   // ✅ Changed to snake_case
+        value={form.shared_with}
+        onChange={handleChange}
+        placeholder="Share with (emails separated by commas)"
+        className="w-full p-3 rounded text-black focus:outline-none focus:ring-2 focus:ring-pink-300"
+        disabled={isSubmitting}
+      />
+      
+      <button
+        type="submit"
+        className="bg-white text-pink-600 font-bold px-6 py-3 rounded hover:bg-pink-100 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+        disabled={isSubmitting}
+      >
+        {isSubmitting ? "Adding..." : "Add Task"}
+      </button>
+    </form>
+  );
+}
