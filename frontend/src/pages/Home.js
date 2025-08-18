@@ -1,181 +1,197 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { Swiper, SwiperSlide } from 'swiper/react';
-import 'swiper/css';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import heroBackground from '../assets/images/hero-background.webp';
-import actionBackground from '../assets/images/action.webp';
+import { Sparkles, Zap, ArrowRight, Play } from 'lucide-react';
 import Features from './Features';
 import Pricing from './Pricing';
 import AboutUs from './AboutUs';
 import FAQ from './FAQ';
-import { faBullseye, faHandshake, faUser, faChartPie } from '@fortawesome/free-solid-svg-icons';
 
 const HomePage = () => {
+  const stats = [
+    { number: '50K+', label: 'Active Users', icon: '👥' },
+    { number: '1M+', label: 'Tasks Completed', icon: '✅' },
+    { number: '99.9%', label: 'Uptime', icon: '⚡' },
+    { number: '4.9★', label: 'User Rating', icon: '⭐' },
+  ];
+
   return (
-    <div>
-      {/* REMOVED THE DUPLICATE NAVBAR - Your Header component in App.js handles this! */}
+    <div className="min-h-screen bg-gradient-to-br from-purple-900 via-blue-900 to-indigo-900 relative overflow-hidden">
+      {/* Background elements */}
+      <div className="absolute inset-0 overflow-hidden">
+        <div className="absolute -top-40 -right-40 w-96 h-96 bg-purple-500 rounded-full mix-blend-multiply filter blur-xl opacity-20 animate-pulse"></div>
+        <div className="absolute -bottom-40 -left-40 w-96 h-96 bg-pink-500 rounded-full mix-blend-multiply filter blur-xl opacity-20 animate-pulse delay-1000"></div>
+        <div className="absolute top-1/2 left-1/2 w-96 h-96 bg-blue-500 rounded-full mix-blend-multiply filter blur-xl opacity-20 animate-pulse delay-500"></div>
+      </div>
 
-      {/* Hero Section - Add padding-top to account for the Header */}
-      <header
-        className="relative h-screen text-center flex flex-col justify-center items-center bg-cover bg-center pt-20"
-        style={{
-          backgroundImage: `url(${heroBackground})`,
-          backgroundBlendMode: "overlay",
-          backgroundColor: "rgba(0, 0, 0, 0.7)"
-        }}
-      >
-        <div className="relative z-10 text-white">
-          <h1 className="text-6xl font-bold mb-4">Plan It. Do It. Achieve It!</h1>
-          <p className="text-lg mb-6">Streamline your tasks and get more done with your personal task management tool.</p>
-          <div className="flex justify-center space-x-4">
-            <Link to="/signup" className="bg-pink-600 text-white px-8 py-3 rounded-full flex items-center hover:bg-pink-700 transition transform hover:scale-105">
-              <i className="fas fa-play-circle mr-2"></i> Get Started
-            </Link>
-            <Link to="/demo" className="bg-white text-pink-600 border border-pink-600 px-8 py-3 rounded-full flex items-center hover:bg-pink-100 transition transform hover:scale-105">
-              <i className="fas fa-video mr-2"></i> Watch Demo
-            </Link>
+      {/* Floating particles */}
+      <div className="absolute inset-0 pointer-events-none">
+        {[...Array(12)].map((_, i) => (
+          <div
+            key={i}
+            className="absolute animate-bounce"
+            style={{
+              left: `${Math.random() * 100}%`,
+              top: `${Math.random() * 100}%`,
+              animationDelay: `${Math.random() * 3}s`,
+              animationDuration: `${3 + Math.random() * 2}s`
+            }}
+          >
+            <Sparkles className="w-3 h-3 text-purple-300 opacity-40" />
           </div>
-        </div>
-      </header>
+        ))}
+      </div>
 
-      {/* Features Component */}
-      <section className="features py-16 bg-gradient-to-r from-pink-200 to-pink-100">
-        <Features />
-      </section>
-
-      {/* Benefits Section */}
-      <section className="benefits bg-gradient-to-r from-pink-200 to-pink-100">
-        <h2 className="text-pink-600 text-4xl font-bold text-center mb-8">Why Choose PlanIt?</h2>
-        <div className="container mx-auto flex flex-wrap justify-center gap-8 bg-gradient-to-r from-pink-200 to-pink-100">
-          {[
-            {
-              icon: faBullseye,
-              title: 'Enhanced Focus & Efficiency',
-              description: 'PlanIt is designed to streamline your workflow, helping you stay focused on priorities and reduce distractions for higher efficiency.',
-            },
-            {
-              icon: faHandshake,
-              title: 'Seamless Collaboration',
-              description: 'Bring teams together with easy sharing and communication features, ensuring everyone is aligned and progress is transparent.',
-            },
-            {
-              icon: faChartPie,
-              title: 'Data-Driven Insights',
-              description: 'Use performance data and insights to improve productivity, spot trends, and make informed decisions.',
-            },
-          ].map((benefit, index) => (
-            <div key={index} className="flex items-center space-x-4 p-4">
-              <FontAwesomeIcon icon={benefit.icon} className="text-pink-600 text-3xl" />
-              <div>
-                <h3 className="text-black font-semibold text-lg">{benefit.title}</h3>
-                <p className="text-gray-700 text-sm">{benefit.description}</p>
-              </div>
+      <div className="relative z-10">
+        {/* Hero Section */}
+        <section className="min-h-screen flex items-center justify-center px-6 py-20">
+          <div className="max-w-6xl mx-auto text-center">
+            <div className="mb-8">
+              <h1 className="text-7xl md:text-8xl font-bold mb-6">
+                <span className="bg-gradient-to-r from-white via-purple-200 to-pink-200 bg-clip-text text-transparent">Plan It.</span>
+                <br />
+                <span className="bg-gradient-to-r from-pink-400 via-purple-400 to-blue-400 bg-clip-text text-transparent">Do It.</span>
+                <br />
+                <span className="bg-gradient-to-r from-yellow-400 via-orange-400 to-red-400 bg-clip-text text-transparent">Achieve It!</span>
+              </h1>
+              <p className="text-xl md:text-2xl text-purple-200 mb-8 max-w-3xl mx-auto leading-relaxed">
+                Transform your productivity with the most intuitive task management platform. Beautiful, fast, and designed for the way you work.
+              </p>
             </div>
-          ))}
-        </div>
-      </section>
 
-      {/* About Component */}
-      <section className="about py-16 bg-gradient-to-r from-pink-200 to-pink-100">
-        <AboutUs />
-      </section>
+            {/* CTA Buttons */}
+            <div className="flex flex-col sm:flex-row items-center justify-center space-y-4 sm:space-y-0 sm:space-x-6 mb-12">
+              <Link
+                to="/signup"
+                className="group bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white px-8 py-4 rounded-2xl font-semibold transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-purple-500/25 flex items-center space-x-3"
+              >
+                <Zap className="w-6 h-6" />
+                <span>Get Started Free</span>
+                <ArrowRight className="w-5 h-5 transform group-hover:translate-x-1 transition-transform duration-300" />
+              </Link>
+              <Link
+                to="/demo"
+                className="group bg-white/10 backdrop-blur-lg border border-white/20 hover:bg-white/20 text-white px-8 py-4 rounded-2xl font-semibold transition-all duration-300 transform hover:scale-105 flex items-center space-x-3"
+              >
+                <Play className="w-6 h-6" />
+                <span>Watch Demo</span>
+              </Link>
+            </div>
 
-      {/* Pricing Component */}
-      <section className="pricing py-16 bg-gradient-to-r from-pink-200 to-pink-100">
-        <Pricing />
-      </section>
-
-      {/* Testimonials Section */}
-      <section className="testimonials bg-gradient-to-r from-pink-200 to-pink-100 py-16">
-        <h2 className="text-pink-600 text-4xl font-bold text-center mb-8">What Our Users Say</h2>
-        <Swiper slidesPerView={1} spaceBetween={10} pagination={{ clickable: true }}>
-          {[
-            { name: 'John Doe', review: 'This app transformed how I manage tasks! I definitely recommend it!', image: '/path/to/john.jpg', rating: 5 },
-            { name: 'Jane Smith', review: 'Task management has never been easier!', image: '/path/to/jane.jpg', rating: 4 },
-          ].map((testimonial, index) => (
-            <SwiperSlide key={index}>
-              {/* Boxed testimonial with gradient */}
-              <div className="bg-gradient-to-r from-pink-500 via-pink-300 to-pink-200 shadow-lg rounded-lg p-6 flex items-center gap-4 max-w-md mx-auto">
-                <FontAwesomeIcon icon={faUser} className="text-white text-3xl" />
-                <div>
-                  <h3 className="text-pink-900 font-semibold">{testimonial.name}</h3>
-                  <p className="text-black-100">{testimonial.review}</p>
-                  <div className="text-yellow-400">
-                    {'★'.repeat(testimonial.rating)}{'☆'.repeat(5 - testimonial.rating)}
-                  </div>
+            {/* Stats */}
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-6 max-w-4xl mx-auto">
+              {stats.map((stat, index) => (
+                <div key={index} className="bg-white/10 backdrop-blur-lg border border-white/20 rounded-xl p-6 hover:bg-white/15 transition-all duration-300 hover:scale-105">
+                  <div className="text-3xl mb-2">{stat.icon}</div>
+                  <div className="text-2xl font-bold text-white mb-1">{stat.number}</div>
+                  <div className="text-purple-200 text-sm">{stat.label}</div>
                 </div>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        {/* Features Component */}
+        <section className="relative">
+          <div className="absolute inset-0 bg-gradient-to-r from-pink-200 to-pink-100 -z-10"></div>
+          <Features />
+        </section>
+
+        {/* About Component */}
+        <section className="relative">
+          <div className="absolute inset-0 bg-gradient-to-r from-pink-200 to-pink-100 -z-10"></div>
+          <AboutUs />
+        </section>
+
+        {/* Pricing Component */}
+        <section className="relative">
+          <div className="absolute inset-0 bg-gradient-to-r from-pink-200 to-pink-100 -z-10"></div>
+          <Pricing />
+        </section>
+
+        {/* FAQ Component */}
+        <section className="relative">
+          <div className="absolute inset-0 bg-gradient-to-r from-pink-200 to-pink-100 -z-10"></div>
+          <FAQ />
+        </section>
+
+        {/* Call to Action */}
+        <section className="relative py-20">
+          <div className="absolute inset-0 bg-gradient-to-r from-purple-900 to-blue-900 -z-10"></div>
+          <div className="max-w-4xl mx-auto text-center px-6">
+            <h2 className="text-4xl md:text-5xl font-bold text-white mb-6">
+              Ready to Transform Your <span className="bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent">Productivity?</span>
+            </h2>
+            <p className="text-xl text-purple-200 mb-8 max-w-2xl mx-auto">
+              Join thousands of users who have already revolutionized the way they work. Start your journey today!
+            </p>
+            <div className="flex flex-col sm:flex-row items-center justify-center space-y-4 sm:space-y-0 sm:space-x-6">
+              <Link
+                to="/signup"
+                className="group bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white px-10 py-4 rounded-2xl font-bold text-lg transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-purple-500/25 flex items-center space-x-3"
+              >
+                <span>Start Free Trial</span>
+                <ArrowRight className="w-6 h-6 transform group-hover:translate-x-1 transition-transform duration-300" />
+              </Link>
+              <Link
+                to="/contact"
+                className="text-purple-300 hover:text-white transition-colors duration-300 font-medium"
+              >
+                Questions? Contact Sales →
+              </Link>
+            </div>
+          </div>
+        </section>
+
+        {/* Footer Section */}
+        <footer className="bg-gray-800 text-white py-12 px-6">
+          <div className="max-w-6xl mx-auto grid grid-cols-2 md:grid-cols-4 gap-8 mb-8">
+            <div>
+              <h3 className="text-white font-bold text-lg mb-4 flex items-center">
+                <Sparkles className="w-5 h-5 mr-2 text-purple-400" />
+                PlanIt
+              </h3>
+              <p className="text-purple-200 text-sm">Your journey to productivity starts here!</p>
+            </div>
+            <div>
+              <h4 className="text-white font-semibold mb-4">Resources</h4>
+              <ul className="space-y-2 text-purple-200 text-sm">
+                <li><Link to="/about" className="hover:text-white transition-colors duration-300">About Us</Link></li>
+                <li><Link to="/contact" className="hover:text-white transition-colors duration-300">Contact</Link></li>
+                <li><Link to="/faq" className="hover:text-white transition-colors duration-300">FAQ</Link></li>
+                <li><Link to="/blog" className="hover:text-white transition-colors duration-300">Blog</Link></li>
+              </ul>
+            </div>
+            <div>
+              <h4 className="text-white font-semibold mb-4">Company</h4>
+              <ul className="space-y-2 text-purple-200 text-sm">
+                <li><Link to="/careers" className="hover:text-white transition-colors duration-300">Careers</Link></li>
+                <li><Link to="/privacy" className="hover:text-white transition-colors duration-300">Privacy Policy</Link></li>
+                <li><Link to="/terms" className="hover:text-white transition-colors duration-300">Terms of Service</Link></li>
+                <li><Link to="/security" className="hover:text-white transition-colors duration-300">Security</Link></li>
+              </ul>
+            </div>
+            <div>
+              <h4 className="text-white font-semibold mb-4">Connect</h4>
+              <div className="flex space-x-3 mb-4">
+                {['f', 'in', 'tw'].map((social, i) => (
+                  <button
+                    key={i}
+                    className="w-10 h-10 bg-white/10 hover:bg-white/20 rounded-lg flex items-center justify-center transition-all duration-300 hover:scale-110"
+                  >
+                    <span className="text-white font-bold">{social}</span>
+                  </button>
+                ))}
               </div>
-            </SwiperSlide>
-          ))}
-        </Swiper>
-      </section>
-
-      {/* FAQ Component */}
-      <section className="faq py-16 bg-gradient-to-r from-pink-200 to-pink-100">
-        <FAQ />
-      </section>
-
-      {/* Call to Action */}
-      <section
-        className="cta py-16 text-center text-white"
-        style={{
-          backgroundImage: `url(${actionBackground})`,
-          backgroundSize: 'cover',
-          backgroundPosition: 'center',
-          backgroundBlendMode: 'overlay',
-          backgroundColor: 'rgba(0, 0, 0, 0.7)',
-        }}
-      >
-        <h2 className="text-3xl font-bold mb-4">Join Thousands of Users Improving Their Productivity!</h2>
-        <p className="mb-6">Sign up today and start organizing your tasks more effectively.</p>
-        <Link
-          to="/signup"
-          className="bg-white text-pink-600 px-8 py-3 rounded-full hover:bg-gray-100 transition transform hover:scale-105"
-        >
-          Get Started
-        </Link>
-      </section>
-
-      {/* Footer Section */}
-      <footer className="bg-gray-800 text-white py-6">
-        <div className="max-w-6xl mx-auto grid grid-cols-2 md:grid-cols-4 gap-3">
-          <div>
-            <h3 className="font-semibold text-base">PlanIt</h3>
-            <p className="text-sm">Your journey to productivity starts here!</p>
-          </div>
-          <div>
-            <h3 className="font-semibold text-base">RESOURCES</h3>
-            <ul className="space-y-1">
-              <li><Link to="/about" className="hover:text-pink-600 transition">About Us</Link></li>
-              <li><Link to="/contact" className="hover:text-pink-600 transition">Contact</Link></li>
-              <li><Link to="/faq" className="hover:text-pink-600 transition">FAQ</Link></li>
-            </ul>
-          </div>
-          <div>
-            <h3 className="font-bold text-base">COMPANY</h3>
-            <ul className="space-y-1">
-              <li><Link to="/careers" className="hover:text-pink-600 transition">Careers</Link></li>
-              <li><Link to="/blog" className="hover:text-pink-600 transition">Blog</Link></li>
-              <li><Link to="/privacy" className="hover:text-pink-600 transition">Privacy Policy</Link></li>
-            </ul>
-          </div>
-          <div>
-            <h3 className="font-semibold text-base">FOLLOW US</h3>
-            <div className="flex space-x-2">
-              <a href="https://facebook.com" className="hover:text-pink-600 transition"><i className="fab fa-facebook-f"></i></a>
-              <a href="https://twitter.com" className="hover:text-pink-600 transition"><i className="fab fa-twitter"></i></a>
-              <a href="https://linkedin.com" className="hover:text-pink-600 transition"><i className="fab fa-linkedin"></i></a>
-            </div>
-            <div className="mt-2">
-              <a href="https://play.google.com/store" className="hover:opacity-80 transition">
-                <img src="/path/to/google-play-badge.png" alt="Google Play Badge" className="w-24" />
-              </a>
+              <p className="text-purple-200 text-sm">hello@planit.com</p>
             </div>
           </div>
-        </div>
-        <p className="text-center mt-3 text-sm">&copy; 2024 PlanIt. All rights reserved.</p>
-       </footer>
+          <div className="border-t border-white/10 pt-8 text-center">
+            <p className="text-purple-300 text-sm">
+              © 2025 PlanIt. All rights reserved. Made with ❤️ for productivity enthusiasts.
+            </p>
+          </div>
+        </footer>
+      </div>
     </div>
   );
 };

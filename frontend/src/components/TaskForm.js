@@ -66,7 +66,7 @@ export default function TaskForm({ onAddTask }) {
   return (
     <form
       onSubmit={handleSubmit}
-      className="bg-gradient-to-r from-pink-400 via-pink-500 to-pink-600 text-white p-6 rounded-xl shadow-lg space-y-4 mb-6"
+      className="bg-gradient-to-r from-purple-500 via-pink-400 to-pink-500 text-white p-6 rounded-xl shadow-lg space-y-4 mb-6"
     >
       <h2 className="text-xl font-bold">Add New Task</h2>
 
@@ -171,7 +171,7 @@ export default function TaskForm({ onAddTask }) {
       {/* Submit Button */}
       <button
         type="submit"
-        className="w-full bg-white text-pink-600 font-bold px-6 py-3 rounded hover:bg-pink-100 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+        className="w-full bg-white text-purple-600 font-bold px-6 py-3 rounded hover:bg-pink-200 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
         disabled={isSubmitting}
       >
         {isSubmitting ? "Adding Task..." : "🎯 Add Task"}

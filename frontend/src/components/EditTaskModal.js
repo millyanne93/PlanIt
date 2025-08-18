@@ -1,6 +1,24 @@
 import React, { useState, useContext } from "react";
 import { AuthContext } from "../context/AuthContext";
 
+// Date formatting utility function
+const formatDateForInput = (date) => {
+  if (!date) return "";
+  
+  // If already in YYYY-MM-DD format
+  if (typeof date === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(date)) {
+    return date;
+  }
+  
+  try {
+    const dateObj = new Date(date);
+    if (isNaN(dateObj.getTime())) return ""; // Invalid date
+    return dateObj.toISOString().slice(0, 10);
+  } catch (e) {
+    return "";
+  }
+};
+
 export default function EditTaskModal({ task, onClose, onUpdateTask }) {
   const { token } = useContext(AuthContext);
 
@@ -8,12 +26,12 @@ export default function EditTaskModal({ task, onClose, onUpdateTask }) {
   const getTaskId = (task) => {
     // Case 1: Backend conversion worked - _id is already a string
     if (typeof task._id === "string") {
-        return task._id;  // "689f162658aac8bb9d3d45d9"
+        return task._id;
     }
 
     // Case 2: Backend conversion failed - _id is still an object
     if (typeof task._id === "object" && task._id.$oid) {
-        return task._id.$oid;  // Extract from {"$oid": "689f162658aac8bb9d3d45d9"}
+        return task._id.$oid;
     }
 
     return task._id;  // Fallback
@@ -24,9 +42,9 @@ export default function EditTaskModal({ task, onClose, onUpdateTask }) {
   const [form, setForm] = useState({
     title: task.title || "",
     description: task.description || "",
-    due_date: task.due_date ? task.due_date.slice(0, 10) : "",
-    status: task.status || "Pending",       // ✅ Added status field
-    priority: task.priority || "Medium",    // ✅ Added priority field
+    due_date: formatDateForInput(task.due_date),
+    status: task.status || "Pending",
+    priority: task.priority || "Medium",
     reminder: task.reminder || "",
     shared_with: task.shared_with || "",
   });
