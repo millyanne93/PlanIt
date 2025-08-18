@@ -19,9 +19,9 @@ export default function TaskManager() {
 
       if (!res.ok) throw new Error(`HTTP error: ${res.status}`);
       const data = await res.json();
-      console.log("Fetched tasks:", data); 
+      console.log("Fetched tasks:", data);
       data.forEach((task, index) => {
-        console.log(`Task ${index} _id:`, task._id, "Type:", typeof task._id); // Add this debug
+        console.log(`Task ${index} _id:`, task._id, "Type:", typeof task._id);
       });
       setTasks(data);
     } catch (err) {
@@ -34,40 +34,78 @@ export default function TaskManager() {
   }, [token]);
 
   const handleAddTask = async (newTask) => {
-    console.log("New task received from backend:", newTask); // Add this debug
-    console.log("New task _id:", newTask._id, "Type:", typeof newTask._id); // Add this debug
+    console.log("New task received from backend:", newTask);
+    console.log("New task _id:", newTask._id, "Type:", typeof newTask._id);
     setTasks(prev => [...prev, newTask]);
   };
 
-  const handleUpdateTask = async (updatedTask) => {
+  // ✅ NEW: For handling updates from the EditTaskModal (makes API call)
+  const handleUpdateTaskFromModal = async (updatedTask) => {
     try {
-      const res = await fetch(`${API_URL}/${updatedTask._id}`, {
+      // Get the proper task ID
+      const taskId = typeof updatedTask._id === 'string' 
+        ? updatedTask._id 
+        : updatedTask._id?.$oid || updatedTask._id;
+
+      console.log("Updating task via modal with ID:", taskId);
+
+      const res = await fetch(`${API_URL}/${taskId}`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
           "Authorization": `Bearer ${token}`
         },
-        body: JSON.stringify(updatedTask)
+        body: JSON.stringify({
+          title: updatedTask.title,
+          description: updatedTask.description,
+          due_date: updatedTask.due_date || updatedTask.dueDate, // Handle both formats
+          status: updatedTask.status,
+          priority: updatedTask.priority,
+          reminder: updatedTask.reminder,
+          shared_with: updatedTask.shared_with
+        })
       });
 
       if (!res.ok) throw new Error(`Failed to update: ${res.status}`);
+      
       const savedTask = await res.json();
-
-      setTasks(prev => prev.map(task => task._id === savedTask._id ? savedTask : task));
+      console.log("Task updated via modal:", savedTask);
+      
+      // Update the local state
+      setTasks(prev => prev.map(task => {
+        const currentTaskId = typeof task._id === 'string' ? task._id : task._id?.$oid;
+        const savedTaskId = typeof savedTask._id === 'string' ? savedTask._id : savedTask._id?.$oid;
+        return currentTaskId === savedTaskId ? savedTask : task;
+      }));
+      
       setEditTask(null);
     } catch (err) {
       console.error("Update error:", err);
+      alert("Failed to update task. Please try again.");
     }
+  };
+
+  // ✅ NEW: For handling updates from quick actions like "Complete" (NO API call - just updates state)
+  const handleUpdateTaskFromAction = (updatedTask) => {
+    console.log("Updating task in state from action:", updatedTask);
+    
+    setTasks(prev => prev.map(task => {
+      const currentTaskId = typeof task._id === 'string' ? task._id : task._id?.$oid;
+      const updatedTaskId = typeof updatedTask._id === 'string' ? updatedTask._id : updatedTask._id?.$oid;
+      
+      return currentTaskId === updatedTaskId ? updatedTask : task;
+    }));
   };
 
   const handleDeleteTask = async (id) => {
     try {
-      console.log("Deleting task withID:", id);
+      console.log("Deleting task with ID:", id);
 
       const res = await fetch(`${API_URL}/${id}`, {
         method: "DELETE",
         headers: { "Authorization": `Bearer ${token}` }
       });
+      
       console.log("Delete response status:", res.status);
 
       if (!res.ok) {
@@ -76,12 +114,16 @@ export default function TaskManager() {
 
       console.log("Delete successful, updating state");
       setTasks(prev => {
-        const newTasks = prev.filter(task => task._id !== id);
+        const newTasks = prev.filter(task => {
+          const taskId = typeof task._id === 'string' ? task._id : task._id?.$oid;
+          return taskId !== id;
+        });
         console.log("Tasks after delete:", newTasks);
         return newTasks;
       });
     } catch (err) {
       console.error("Delete error:", err);
+      alert("Failed to delete task. Please try again.");
     }
   };
 
@@ -93,7 +135,7 @@ export default function TaskManager() {
 
       <TaskList
         tasks={tasks}
-        onUpdateTask={handleUpdateTask}
+        onUpdateTask={handleUpdateTaskFromAction}  {/* ✅ Use the state-only handler */}
         onDeleteTask={handleDeleteTask}
       />
 
@@ -101,7 +143,7 @@ export default function TaskManager() {
         <EditTaskModal
           task={editTask}
           onClose={() => setEditTask(null)}
-          onUpdateTask={handleUpdateTask}
+          onUpdateTask={handleUpdateTaskFromModal}  {/* ✅ Use the API handler */}
         />
       )}
     </div>

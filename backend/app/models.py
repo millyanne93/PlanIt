@@ -36,7 +36,9 @@ class Task:
             "user_id": user_id,
             "reminder": reminder,  # New field for reminders
             "shared_with": shared_with or [], 
-            "created_at": datetime.utcnow()
+            "created_at": datetime.utcnow(),
+            "updated_at": datetime.utcnow()
+
         }
         return mongo.db.tasks.insert_one(task_data)
 

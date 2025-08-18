@@ -13,14 +13,13 @@ const Login = () => {
     const handleSubmit = async (e) => {
         e.preventDefault();
         try {
-            console.log('Attempting login with:', { username, password });
             const response = await login({ username, password });
-            console.log('Login response:', response);
             loginUser(response); // Save token and user data
             navigate('/dashboard');
         } catch (err) {
-            const errorMessage = err.response ? err.response.data.message : 'An error occurred. Please try again.';
-            console.error('Login error:', errorMessage);
+            const errorMessage = err.response 
+                ? err.response.data.message 
+                : 'An error occurred. Please try again.';
             setError(errorMessage);
         }
     };

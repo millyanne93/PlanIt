@@ -1,7 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { Swiper, SwiperSlide } from 'swiper/react'; 
-import 'swiper/css'; 
+import { Swiper, SwiperSlide } from 'swiper/react';
+import 'swiper/css';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import heroBackground from '../assets/images/hero-background.webp';
 import actionBackground from '../assets/images/action.webp';
@@ -14,22 +14,11 @@ import { faBullseye, faHandshake, faUser, faChartPie } from '@fortawesome/free-s
 const HomePage = () => {
   return (
     <div>
-      {/* Sticky Navbar */}
-      <nav className="fixed top-0 w-full bg-white shadow-lg z-50">
-        <div className="container mx-auto flex justify-between items-center py-4">
-          <Link to="/" className="text-pink-700 text-2xl font-bold">PlanIt</Link>
-          <div className="space-x-4">
-            <Link to="/features" className="hover:text-pink-600 transition">Features</Link>
-            <Link to="/pricing" className="hover:text-pink-600 transition">Pricing</Link>
-            <Link to="/contact" className="hover:text-pink-600 transition">Contact</Link>
-            <Link to="/login" className="hover:text-pink-600 transition">Login</Link>
-          </div>
-        </div>
-      </nav>
+      {/* REMOVED THE DUPLICATE NAVBAR - Your Header component in App.js handles this! */}
 
-      {/* Hero Section */}
+      {/* Hero Section - Add padding-top to account for the Header */}
       <header
-        className="relative h-screen text-center flex flex-col justify-center items-center bg-cover bg-center"
+        className="relative h-screen text-center flex flex-col justify-center items-center bg-cover bg-center pt-20"
         style={{
           backgroundImage: `url(${heroBackground})`,
           backgroundBlendMode: "overlay",
@@ -49,10 +38,11 @@ const HomePage = () => {
           </div>
         </div>
       </header>
+
       {/* Features Component */}
       <section className="features py-16 bg-gradient-to-r from-pink-200 to-pink-100">
         <Features />
-      </section> 
+      </section>
 
       {/* Benefits Section */}
       <section className="benefits bg-gradient-to-r from-pink-200 to-pink-100">
@@ -133,7 +123,7 @@ const HomePage = () => {
           backgroundImage: `url(${actionBackground})`,
           backgroundSize: 'cover',
           backgroundPosition: 'center',
-          backgroundBlendMode: 'overlay', 
+          backgroundBlendMode: 'overlay',
           backgroundColor: 'rgba(0, 0, 0, 0.7)',
         }}
       >
@@ -145,47 +135,47 @@ const HomePage = () => {
         >
           Get Started
         </Link>
-      </section> 
+      </section>
 
-    {/* Footer Section */}
-    <footer className="bg-gray-800 text-white py-6"> 
-      <div className="max-w-6xl mx-auto grid grid-cols-2 md:grid-cols-4 gap-3">
-        <div>
-          <h3 className="font-semibold text-base">PlanIt</h3> 
-          <p className="text-sm">Your journey to productivity starts here!</p> 
-        </div>
-        <div>
-          <h3 className="font-semibold text-base">RESOURCES</h3> 
-          <ul className="space-y-1"> 
-            <li><Link to="/about" className="hover:text-pink-600 transition">About Us</Link></li>
-            <li><Link to="/contact" className="hover:text-pink-600 transition">Contact</Link></li>
-            <li><Link to="/faq" className="hover:text-pink-600 transition">FAQ</Link></li>
-          </ul>
-        </div>
-        <div>
-          <h3 className="font-bold text-base">COMPANY</h3> 
-          <ul className="space-y-1"> 
-            <li><Link to="/careers" className="hover:text-pink-600 transition">Careers</Link></li>
-            <li><Link to="/blog" className="hover:text-pink-600 transition">Blog</Link></li>
-            <li><Link to="/privacy" className="hover:text-pink-600 transition">Privacy Policy</Link></li>
-          </ul>
-        </div>
-        <div>
-          <h3 className="font-semibold text-base">FOLLOW US</h3> 
-          <div className="flex space-x-2"> 
-            <a href="https://facebook.com" className="hover:text-pink-600 transition"><i className="fab fa-facebook-f"></i></a>
-            <a href="https://twitter.com" className="hover:text-pink-600 transition"><i className="fab fa-twitter"></i></a>
-            <a href="https://linkedin.com" className="hover:text-pink-600 transition"><i className="fab fa-linkedin"></i></a>
+      {/* Footer Section */}
+      <footer className="bg-gray-800 text-white py-6">
+        <div className="max-w-6xl mx-auto grid grid-cols-2 md:grid-cols-4 gap-3">
+          <div>
+            <h3 className="font-semibold text-base">PlanIt</h3>
+            <p className="text-sm">Your journey to productivity starts here!</p>
           </div>
-          <div className="mt-2"> 
-            <a href="https://play.google.com/store" className="hover:opacity-80 transition">
-              <img src="/path/to/google-play-badge.png" alt="Google Play Badge" className="w-24" /> 
-            </a>
+          <div>
+            <h3 className="font-semibold text-base">RESOURCES</h3>
+            <ul className="space-y-1">
+              <li><Link to="/about" className="hover:text-pink-600 transition">About Us</Link></li>
+              <li><Link to="/contact" className="hover:text-pink-600 transition">Contact</Link></li>
+              <li><Link to="/faq" className="hover:text-pink-600 transition">FAQ</Link></li>
+            </ul>
+          </div>
+          <div>
+            <h3 className="font-bold text-base">COMPANY</h3>
+            <ul className="space-y-1">
+              <li><Link to="/careers" className="hover:text-pink-600 transition">Careers</Link></li>
+              <li><Link to="/blog" className="hover:text-pink-600 transition">Blog</Link></li>
+              <li><Link to="/privacy" className="hover:text-pink-600 transition">Privacy Policy</Link></li>
+            </ul>
+          </div>
+          <div>
+            <h3 className="font-semibold text-base">FOLLOW US</h3>
+            <div className="flex space-x-2">
+              <a href="https://facebook.com" className="hover:text-pink-600 transition"><i className="fab fa-facebook-f"></i></a>
+              <a href="https://twitter.com" className="hover:text-pink-600 transition"><i className="fab fa-twitter"></i></a>
+              <a href="https://linkedin.com" className="hover:text-pink-600 transition"><i className="fab fa-linkedin"></i></a>
+            </div>
+            <div className="mt-2">
+              <a href="https://play.google.com/store" className="hover:opacity-80 transition">
+                <img src="/path/to/google-play-badge.png" alt="Google Play Badge" className="w-24" />
+              </a>
+            </div>
           </div>
         </div>
-      </div>
-      <p className="text-center mt-3 text-sm">&copy; 2024 PlanIt. All rights reserved.</p> 
-     </footer>
+        <p className="text-center mt-3 text-sm">&copy; 2024 PlanIt. All rights reserved.</p>
+       </footer>
     </div>
   );
 };

@@ -38,6 +38,8 @@ def create_task():
             title=data['title'],
             description=data.get('description', ''),
             due_date=due_date,
+            status=data.get('status', 'Pending'),
+            priority=data.get('priority', 'Medium')
         )
         task_id = result.inserted_id
         
@@ -111,18 +113,62 @@ def update_task(task_id):
         update_data['title'] = data['title']
     if 'description' in data:
         update_data['description'] = data['description']
+    
+    # ✅ FIXED: Handle different due_date formats
     if 'due_date' in data:
+        due_date_value = data['due_date']
         try:
-            update_data['due_date'] = datetime.strptime(data['due_date'], '%Y-%m-%d')
-        except ValueError:
+            # Case 1: String format from frontend form (YYYY-MM-DD)
+            if isinstance(due_date_value, str):
+                update_data['due_date'] = datetime.strptime(due_date_value, '%Y-%m-%d')
+            
+            # Case 2: MongoDB date object format {"$date": "..."}
+            elif isinstance(due_date_value, dict) and '$date' in due_date_value:
+                # Already in correct format for MongoDB
+                update_data['due_date'] = datetime.fromisoformat(due_date_value['$date'].replace('Z', '+00:00'))
+            
+            # Case 3: Already a datetime object
+            elif isinstance(due_date_value, datetime):
+                update_data['due_date'] = due_date_value
+                
+            else:
+                logging.warning(f"Unexpected due_date format: {due_date_value}")
+                # Try to parse as string anyway
+                update_data['due_date'] = datetime.strptime(str(due_date_value), '%Y-%m-%d')
+                
+        except (ValueError, TypeError) as e:
+            logging.error(f"Error parsing due_date: {e}")
             return jsonify(message="Invalid date format"), 400
+
     if 'status' in data:
         update_data['status'] = data['status']
     if 'priority' in data:
         update_data['priority'] = data['priority']
+    if 'reminder' in data:
+        update_data['reminder'] = data['reminder']
+    if 'shared_with' in data:
+        update_data['shared_with'] = data['shared_with']
 
-    Task.update_task(task_id, update_data)
-    return jsonify(message="Task updated successfully!"), 200
+    # Add updated timestamp
+    update_data['updated_at'] = datetime.utcnow()
+
+    try:
+        Task.update_task(task_id, update_data)
+        
+        # ✅ Return the updated task in consistent format
+        updated_task = Task.get_task_by_id(task_id)
+        task_json_str = json_util.dumps(updated_task)
+        task_json = json.loads(task_json_str)
+        
+        # Convert ObjectId to string
+        if "_id" in task_json and "$oid" in task_json["_id"]:
+            task_json["_id"] = str(task_json["_id"]["$oid"])
+            
+        return jsonify(task_json), 200
+        
+    except Exception as e:
+        logging.error(f"Error updating task: {e}")
+        return jsonify(message="Failed to update task"), 500
 
 @tasks_bp.route('/tasks/<task_id>', methods=['DELETE'])
 @jwt_required()
@@ -145,8 +191,18 @@ def complete_task(task_id):
     if not task or task['user_id'] != user_id:
         return jsonify(message="Task not found or unauthorized"), 404
 
-    Task.mark_task_as_completed(task_id)
-    return jsonify(message="Task marked as completed!"), 200
+    # Update to use "Completed" status instead of a separate field
+    Task.update_task(task_id, {"status": "Completed", "updated_at": datetime.utcnow()})
+    
+    # Return the updated task object (same format as other endpoints)
+    updated_task = Task.get_task_by_id(task_id)
+    task_json_str = json_util.dumps(updated_task)
+    task_json = json.loads(task_json_str)
+    if "_id" in task_json and "$oid" in task_json["_id"]:
+        task_json["_id"] = str(task_json["_id"]["$oid"])
+    
+    return jsonify(task_json), 200
+
 
 def get_task_by_id(task_id):
     try:
