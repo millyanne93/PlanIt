@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useContext } from 'react';
+import React, { useState, useEffect, useContext, useCallback } from 'react';
 import { AuthContext } from '../context/AuthContext';
 import { Plus, BarChart3, Clock, CheckCircle, AlertTriangle, Sparkles, Eye, TrendingUp } from 'lucide-react';
 import TaskForm from '../components/TaskForm';
@@ -14,7 +14,7 @@ const Dashboard = () => {
 
   const API_URL = "http://localhost:5000/tasks";
 
-  const fetchTasks = async () => {
+  const fetchTasks = useCallback(async () => {
     try {
       const res = await fetch(API_URL, {
         headers: { 'Authorization': `Bearer ${token}` }
@@ -26,7 +26,11 @@ const Dashboard = () => {
     } catch (err) {
       console.error("Fetch error:", err);
     }
-  };
+  }, [API_URL, token]); // dependencies
+
+  useEffect(() => {
+    if (token) fetchTasks();
+  }, [token, fetchTasks]);
 
   const calculateStats = (taskList) => {
     const now = new Date();
@@ -44,10 +48,6 @@ const Dashboard = () => {
     }, { total: 0, pending: 0, completed: 0, overdue: 0 });
     setStats(stats);
   };
-
-  useEffect(() => {
-    if (token) fetchTasks();
-  }, [token]);
 
   const handleAddTask = async (newTask) => {
     setTasks(prev => {
