@@ -13,7 +13,7 @@ jobs:
   test:
     runs-on: ubuntu-latest
     env:
-      # Use the GitHub Actions Mongo service hostname, not localhost
+      # Use the GitHub Actions Mongo service hostname
       MONGO_URI: "mongodb://mongo:27017/planit_test"
 
     services:
@@ -29,7 +29,7 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v4
         with:
-          python-version: '3.8'`
+          python-version: '3.8'
 
       - name: Test backend
         run: |
@@ -115,3 +115,4 @@ jobs:
           context: ./backend
           push: false
           tags: planit-backend:dev
+
