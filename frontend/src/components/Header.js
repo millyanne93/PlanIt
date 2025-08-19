@@ -1,12 +1,11 @@
 import React, { useContext, useState, useRef, useEffect } from 'react';
 import { AuthContext } from '../context/AuthContext';
-import { Link, useLocation } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 
 const Header = () => {
     const { user, logoutUser, loading } = useContext(AuthContext);
     const [dropdownOpen, setDropdownOpen] = useState(false);
     const dropdownRef = useRef(null);
-    const location = useLocation();
 
     useEffect(() => {
         const handleClickOutside = (event) => {
