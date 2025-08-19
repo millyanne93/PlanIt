@@ -3,11 +3,11 @@ name: CI/CD - Build and Push Docker Images
 on:
   push:
     branches:
-      - main
+      - master
       - development
   pull_request:
     branches:
-      - main
+      - master
 
 jobs:
   test:
