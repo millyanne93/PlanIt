@@ -18,8 +18,6 @@ jobs:
     services:
       mongo:
         image: mongo:5.0
-        options: >-
-          --bind_ip_all
 
     steps:
       - name: Checkout code
