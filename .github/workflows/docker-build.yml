@@ -13,7 +13,6 @@ jobs:
   test:
     runs-on: ubuntu-latest
     env:
-      # Use the GitHub Actions Mongo service hostname, not localhost
       MONGO_URI: "mongodb://mongo:27017/planit_test"
 
     services:
@@ -31,17 +30,28 @@ jobs:
         with:
           python-version: '3.8'
 
+      - name: Install Python dependencies
+        run: |
+          cd backend
+          pip install -r requirements.txt
+
       - name: Wait for MongoDB to be ready
         run: |
           echo "Waiting for MongoDB..."
-          until nc -z mongo 27017; do
-            sleep 2
-          done
+          python - <<EOF
+import time
+from pymongo import MongoClient
+while True:
+    try:
+        MongoClient("mongodb://mongo:27017/").admin.command('ping')
+        break
+    except Exception:
+        time.sleep(2)
+EOF
 
       - name: Test backend
         run: |
           cd backend
-          pip install -r requirements.txt
           python -c "import os; print('MONGO_URI:', os.environ.get('MONGO_URI')); import app.main; print('Backend imports successful')"
 
       - name: Set up Node.js
