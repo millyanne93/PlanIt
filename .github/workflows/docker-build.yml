@@ -37,16 +37,11 @@ jobs:
           pip install -r requirements.txt
           # Wait for MongoDB to be ready
           sleep 5
+          # Create a .env file as backup
+          echo "MONGO_URI=mongodb://localhost:27017/planit_test" > .env
           # Export the environment variable and test
           export MONGO_URI="mongodb://localhost:27017/planit_test"
-          python -c "
-          import os
-          print('MONGO_URI:', os.environ.get('MONGO_URI'))
-          print('All env vars with MONGO:', {k: v for k, v in os.environ.items() if 'MONGO' in k})
-          from app.main import create_app
-          app = create_app()
-          print('Backend app created successfully')
-          "
+          python -c "import os; print('MONGO_URI:', os.environ.get('MONGO_URI')); print('All env vars with MONGO:', {k: v for k, v in os.environ.items() if 'MONGO' in k}); from app.main import create_app; app = create_app(); print('Backend app created successfully')"
       - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
