@@ -14,26 +14,45 @@ jobs:
     runs-on: ubuntu-latest
     env:
       MONGO_URI: "mongodb://localhost:27017/planit_test"
+
+    services:
+      mongo:
+        image: mongo:6.0
+        ports:
+          - 27017:27017
+        options: >-
+          --health-cmd "mongo --eval 'db.adminCommand(\"ping\")'" 
+          --health-interval 10s 
+          --health-timeout 5s 
+          --health-retries 5
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
-      
+
       - name: Set up Python
         uses: actions/setup-python@v4
         with:
           python-version: '3.8'
-      
+
+      - name: Wait for MongoDB to be ready
+        run: |
+          echo "Waiting for MongoDB..."
+          until mongo --host localhost --eval "print(\"MongoDB ready\")"; do
+            sleep 2
+          done
+
       - name: Test backend
         run: |
           cd backend
           pip install -r requirements.txt
-          python -c "import app.main; print('Backend imports successful')"
-      
+          python -c "import os; print('MONGO_URI:', os.environ.get('MONGO_URI')); import app.main; print('Backend imports successful')"
+
       - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
           node-version: '18'
-      
+
       - name: Test frontend
         run: |
           cd frontend
@@ -44,7 +63,7 @@ jobs:
     needs: test
     runs-on: ubuntu-latest
     if: github.ref == 'refs/heads/master'
-    
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -86,7 +105,7 @@ jobs:
     needs: test
     runs-on: ubuntu-latest
     if: github.ref == 'refs/heads/development'
-    
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -107,3 +126,4 @@ jobs:
           context: ./backend
           push: false
           tags: planit-backend:dev
+
