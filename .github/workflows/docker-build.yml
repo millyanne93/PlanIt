@@ -20,6 +20,11 @@ jobs:
         image: mongo:5.0
         ports:
           - 27017:27017
+        options: >-
+          --health-cmd "mongosh --eval 'db.adminCommand({ ping: 1 })'" 
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
 
     steps:
       - name: Checkout code
@@ -35,8 +40,9 @@ jobs:
           MONGO_URI: ${{ job.env.MONGO_URI }}
         run: |
           cd backend
+          pip install --upgrade pip
           pip install -r requirements.txt
-          python -c "import os; print('MONGO_URI:', os.environ.get('MONGO_URI')); import app.main; print('Backend imports successful')"
+          python -c "import os; print('MONGO_URI:', os.environ.get('MONGO_URI')); from app.main import create_app; app = create_app(); print('Backend app created successfully')"
 
       - name: Set up Node.js
         uses: actions/setup-node@v4
