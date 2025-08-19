@@ -12,6 +12,8 @@ on:
 jobs:
   test:
     runs-on: ubuntu-latest
+    env:
+      MONGO_URI: "mongodb://localhost:27017/planit_test"
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
