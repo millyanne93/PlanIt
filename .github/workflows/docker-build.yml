@@ -13,14 +13,8 @@ jobs:
   test:
     runs-on: ubuntu-latest
     env:
-      # Use the GitHub Actions Mongo service hostname, not localhost
-      MONGO_URI: "mongodb://mongo:27017/planit_test"
-
-    services:
-      mongo:
-        image: mongo:5.0
-        ports:
-          - 27017:27017
+      # This can be any dummy value - it just needs to exist
+      MONGO_URI: "mongodb://dummy-host:27017/planit_test"
 
     steps:
       - name: Checkout code
@@ -31,16 +25,14 @@ jobs:
         with:
           python-version: '3.8'
 
-      - name: Wait for MongoDB to be ready
+      - name: Install Python dependencies
         run: |
-          echo "Waiting for MongoDB..."
-          timeout 60s bash -c 'until printf "" 2>>/dev/null >>/dev/tcp/mongo/27017; do sleep 2; done'
-          echo "MongoDB is ready!"
+          cd backend
+          pip install -r requirements.txt
 
       - name: Test backend
         run: |
           cd backend
-          pip install -r requirements.txt
           python -c "import os; print('MONGO_URI:', os.environ.get('MONGO_URI')); import app.main; print('Backend imports successful')"
 
       - name: Set up Node.js
@@ -121,4 +113,3 @@ jobs:
           context: ./backend
           push: false
           tags: planit-backend:dev
-
