@@ -25,15 +25,13 @@ jobs:
         with:
           python-version: '3.8'
 
-      - name: Install Python dependencies
-        run: |
-          cd backend
-          pip install -r requirements.txt
-
       - name: Test backend
         run: |
           cd backend
-          python -c "import os; print('MONGO_URI:', os.environ.get('MONGO_URI')); import app.main; print('Backend imports successful')"
+          pip install -r requirements.txt
+          # Set the Flask config variable explicitly
+          export FLASK_MONGO_URI="mongodb://dummy-host:27017/planit_test"
+          python -c "import os; print('MONGO_URI:', os.environ.get('MONGO_URI')); import app.main; print('Backend imports successful')" 
 
       - name: Set up Node.js
         uses: actions/setup-node@v4
