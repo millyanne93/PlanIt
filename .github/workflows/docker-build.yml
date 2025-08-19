@@ -13,7 +13,6 @@ jobs:
   test:
     runs-on: ubuntu-latest
     env:
-      # This can be any dummy value - it just needs to exist
       MONGO_URI: "mongodb://dummy-host:27017/planit_test"
 
     steps:
@@ -29,29 +28,24 @@ jobs:
         run: |
           cd backend
           pip install -r requirements.txt
-          # Set the Flask config variable explicitly
-          export FLASK_MONGO_URI="mongodb://dummy-host:27017/planit_test"
-          python -c "import os; print('MONGO_URI:', os.environ.get('MONGO_URI')); import app.main; print('Backend imports successful')"
-      - name: Test backend
-        run: |
-          cd backend
-          pip install -r requirements.txt
-          # Set the environment variable AND configure Flask
+          # Set the environment variable
           export MONGO_URI="mongodb://dummy-host:27017/planit_test"
           python -c "
-      import os
-      os.environ['MONGO_URI'] = 'mongodb://dummy-host:27017/planit_test'
+import os
+os.environ['MONGO_URI'] = 'mongodb://dummy-host:27017/planit_test'
 
-      # Now manually configure the Flask app
-      from app import create_app
-      app = create_app()
-      app.config['MONGO_URI'] = os.environ.get('MONGO_URI')
+# Now manually configure the Flask app
+from app import create_app
+app = create_app()
+app.config['MONGO_URI'] = os.environ.get('MONGO_URI')
 
-      # Re-initialize MongoDB with the correct config
-      from app import mongo
-      mongo.init_app(app)
+# Re-initialize MongoDB with the correct config
+from app import mongo
+mongo.init_app(app)
 
-      print('Backend imports successful')" 
+print('MONGO_URI set to:', app.config['MONGO_URI'])
+print('Backend imports successful')
+"
 
       - name: Set up Node.js
         uses: actions/setup-node@v4
