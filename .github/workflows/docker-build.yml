@@ -13,18 +13,14 @@ jobs:
   test:
     runs-on: ubuntu-latest
     env:
-      MONGO_URI: "mongodb://localhost:27017/planit_test"
+      # Use the GitHub Actions Mongo service hostname, not localhost
+      MONGO_URI: "mongodb://mongo:27017/planit_test"
 
     services:
       mongo:
         image: mongo:5.0
         ports:
           - 27017:27017
-        options: >-
-          --health-cmd="mongo --eval 'db.adminCommand(\"ping\")'"
-          --health-interval=10s
-          --health-timeout=5s
-          --health-retries=5
 
     steps:
       - name: Checkout code
@@ -38,10 +34,9 @@ jobs:
       - name: Wait for MongoDB to be ready
         run: |
           echo "Waiting for MongoDB..."
-          until nc -z localhost 27017; do
+          until nc -z mongo 27017; do
             sleep 2
           done
-          echo "MongoDB is ready!"
 
       - name: Test backend
         run: |
