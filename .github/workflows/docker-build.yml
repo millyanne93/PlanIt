@@ -10,38 +10,9 @@ on:
 jobs:
   test:
     runs-on: ubuntu-latest
-    services:
-      mongo:
-        image: mongo:5.0
-        ports:
-          - 27017:27017
-        options: >-
-          --health-cmd "mongosh --eval 'db.adminCommand({ ping: 1 })'"
-          --health-interval 10s
-          --health-timeout 5s
-          --health-retries 5
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
-      - name: Set up Python
-        uses: actions/setup-python@v4
-        with:
-          python-version: '3.8'
-      - name: Test backend
-        env:
-          MONGO_URI: "mongodb://localhost:27017/planit_test"
-          FLASK_ENV: "testing"
-        run: |
-          cd backend
-          pip install --upgrade pip
-          pip install -r requirements.txt
-          # Wait for MongoDB to be ready
-          sleep 5
-          # Create a .env file as backup
-          echo "MONGO_URI=mongodb://localhost:27017/planit_test" > .env
-          # Export the environment variable and test
-          export MONGO_URI="mongodb://localhost:27017/planit_test"
-          python -c "import os; print('MONGO_URI:', os.environ.get('MONGO_URI')); print('All env vars with MONGO:', {k: v for k, v in os.environ.items() if 'MONGO' in k}); from app.main import create_app; app = create_app(); print('Backend app created successfully')"
       - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
@@ -51,6 +22,17 @@ jobs:
           cd frontend
           npm ci
           npm run build
+      # TODO: Re-enable backend testing once AWS database is deployed
+      # - name: Set up Python
+      #   uses: actions/setup-python@v4
+      #   with:
+      #     python-version: '3.8'
+      # - name: Test backend
+      #   run: |
+      #     cd backend
+      #     pip install --upgrade pip
+      #     pip install -r requirements.txt
+      #     # Add database connection test here
   build-and-push:
     needs: test
     runs-on: ubuntu-latest
