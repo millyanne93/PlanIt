@@ -1,0 +1,30 @@
+replicaCount: 2
+
+image:
+  repository: millyanne93/planit-frontend
+  tag: "1.0"
+  pullPolicy: IfNotPresent
+
+service:
+  type: ClusterIP
+  port: 80
+
+resources: {}
+
+# Environment variables passed into the frontend container
+env:
+  # Point API calls to the backend service name inside the cluster
+  API_BASE_URL: "http://planit-backend:5000"
+
+# Ingress configuration
+ingress:
+  enabled: true
+  className: "nginx"
+  annotations: {}
+  hosts: []
+  tls: []
+
+# Reference to backend service (for ingress path routing)
+backend:
+  servicePort: 5000
+

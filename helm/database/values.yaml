@@ -1,0 +1,44 @@
+## MongoDB configuration using Bitnami Helm chart
+image:
+  repository: bitnami/mongodb
+  tag: 8.0.12-debian-12-r2
+  pullPolicy: IfNotPresent
+
+# Authentication settings
+auth:
+  enabled: true
+  rootPassword: "NewRootPass2025"
+  username: "appuser"
+  password: "AppUserPass2025"
+  database: "planitdb"
+
+# Replica set configuration
+replicaSet:
+  enabled: false
+  replicas: 1
+
+# Persistence settings
+persistence:
+  enabled: true
+  size: 5Gi
+
+# Resources
+resources:
+  requests:
+    memory: 512Mi
+    cpu: 250m
+  limits:
+    memory: 2Gi
+    cpu: 500m
+
+# Service exposure
+service:
+  name: planit-mongo
+  type: ClusterIP
+  port: 27017
+
+# Probes
+livenessProbe:
+  enabled: true
+readinessProbe:
+  enabled: true

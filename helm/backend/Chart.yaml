@@ -1,0 +1,6 @@
+apiVersion: v2
+name: planit-backend
+description: Helm chart for PlanIt Flask backend
+type: application
+version: 0.1.0
+appVersion: "1.0.0"

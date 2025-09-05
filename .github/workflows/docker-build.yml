@@ -1,4 +1,5 @@
-name: CI/CD - Build and Push Docker Images
+name: CI/CD - Build, Push & Deploy
+
 on:
   push:
     branches:
@@ -7,90 +8,67 @@ on:
   pull_request:
     branches:
       - master
+
 jobs:
   test:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
-      
-      # Frontend testing
+
+      # --- frontend test ---
       - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
           node-version: '18'
-      
+
       - name: Test frontend
         env:
-          CI: false  # Disable treating warnings as errors temporarily
+          CI: false
         run: |
           cd frontend
           npm ci
           npm run build
-      
-      # Backend testing (syntax and imports only)
+
+      # --- backend test ---
       - name: Set up Python
         uses: actions/setup-python@v4
         with:
           python-version: '3.8'
-      
-      - name: Test backend (syntax and imports only)
+
+      - name: Test backend (syntax & imports)
         run: |
           cd backend
           pip install --upgrade pip
           pip install -r requirements.txt
-          # Test Python syntax and basic imports
           python -m py_compile app/__init__.py
           python -m py_compile app/main.py
-          python -c "print('Testing basic imports...'); import flask, flask_pymongo, flask_jwt_extended, flask_cors; print('✓ All Flask dependencies imported successfully'); print('Backend syntax and basic structure test completed successfully!')"
-      
-      # Docker build testing
+          python -c "import flask, flask_pymongo, flask_jwt_extended, flask_cors; print('✓ Backend imports OK')"
+
+      # --- docker test ---
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
-      
+
       - name: Test Docker builds
         run: |
-          echo "Testing frontend Docker build..."
           docker build -t planit-frontend-test ./frontend
-          echo "✓ Frontend Docker build successful"
-          
-          echo "Testing backend Docker build..."
           docker build -t planit-backend-test ./backend
-          echo "✓ Backend Docker build successful"
-          
-          echo "Checking image sizes..."
-          docker images | grep planit-
-          
-          echo "Testing container startup (quick test)..."
-          # Test frontend container can start
           docker run --rm -d --name frontend-test -p 3001:3000 planit-frontend-test &
-          sleep 5
-          docker stop frontend-test || true
-          
-          # Test backend container can start (without database connection)
+          sleep 5 && docker stop frontend-test || true
           docker run --rm -d --name backend-test -p 5001:5000 -e MONGO_URI=mongodb://fake:27017/test planit-backend-test &
-          sleep 5
-          docker stop backend-test || true
-          
-          echo "✓ Docker container startup tests completed"
+          sleep 5 && docker stop backend-test || true
 
   build-and-push:
     needs: test
     runs-on: ubuntu-latest
     if: github.ref == 'refs/heads/master'
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-      
-      - name: Log in to Docker Hub
-        uses: docker/login-action@v3
+      - uses: actions/checkout@v4
+      - uses: docker/login-action@v3
         with:
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
-      
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v3
-      
+      - uses: docker/setup-buildx-action@v3
       - name: Build and push frontend
         uses: docker/build-push-action@v5
         with:
@@ -99,10 +77,6 @@ jobs:
           tags: |
             millyanne93/planit-frontend:latest
             millyanne93/planit-frontend:${{ github.sha }}
-            millyanne93/planit-frontend:v${{ github.run_number }}
-          cache-from: type=gha
-          cache-to: type=gha,mode=max
-      
       - name: Build and push backend
         uses: docker/build-push-action@v5
         with:
@@ -111,35 +85,68 @@ jobs:
           tags: |
             millyanne93/planit-backend:latest
             millyanne93/planit-backend:${{ github.sha }}
-            millyanne93/planit-backend:v${{ github.run_number }}
-          cache-from: type=gha
-          cache-to: type=gha,mode=max
 
   build-only:
     needs: test
     runs-on: ubuntu-latest
     if: github.ref == 'refs/heads/development'
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-      
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v3
-      
+      - uses: actions/checkout@v4
+      - uses: docker/setup-buildx-action@v3
       - name: Build frontend (no push)
         uses: docker/build-push-action@v5
         with:
           context: ./frontend
           push: false
           tags: planit-frontend:dev
-          cache-from: type=gha
-          cache-to: type=gha,mode=max
-      
       - name: Build backend (no push)
         uses: docker/build-push-action@v5
         with:
           context: ./backend
           push: false
           tags: planit-backend:dev
-          cache-from: type=gha
-          cache-to: type=gha,mode=max
+
+  deploy:
+    needs: build-and-push
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/master'
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up kubectl
+        uses: azure/setup-kubectl@v4
+        with:
+          version: v1.30.0
+
+      - name: Set up Helm
+        uses: azure/setup-helm@v4
+        with:
+          version: v3.15.2
+
+      - name: Configure kubeconfig
+        run: |
+          mkdir -p $HOME/.kube
+          echo "${{ secrets.KUBE_CONFIG }}" | base64 -d > $HOME/.kube/config
+
+      - name: Helm Dependency Update
+        run: helm dependency update ./helm/database
+
+      - name: Deploy Database
+        run: |
+          helm upgrade --install planit-mongo ./helm/database \
+            --namespace planit --create-namespace
+
+      - name: Deploy Backend
+        run: |
+          helm upgrade --install planit-backend ./helm/backend \
+            --namespace planit --create-namespace \
+            --set image.repository=millyanne93/planit-backend \
+            --set image.tag=${{ github.sha }}
+
+      - name: Deploy Frontend
+        run: |
+          helm upgrade --install planit-frontend ./helm/frontend \
+            --namespace planit --create-namespace \
+            --set image.repository=millyanne93/planit-frontend \
+            --set image.tag=${{ github.sha }}
+
