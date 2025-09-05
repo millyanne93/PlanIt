@@ -1,0 +1,7 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ .Release.Name }}-frontend-config
+data:
+  API_BASE_URL: {{ .Values.env.API_BASE_URL | quote }}
+

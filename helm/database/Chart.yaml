@@ -1,0 +1,12 @@
+apiVersion: v2
+name: database
+description: A Helm chart for MongoDB
+type: application
+version: 0.1.0
+appVersion: "8.0.12"
+
+dependencies:
+  - name: mongodb
+    version: "16.5.44"
+    repository: "https://charts.bitnami.com/bitnami"
+    condition: mongodb.enabled

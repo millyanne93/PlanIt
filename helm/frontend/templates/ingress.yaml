@@ -1,0 +1,20 @@
+{{- if .Values.ingress.enabled }}
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: {{ include "planit-frontend.fullname" . }}-ingress
+  labels:
+    {{- include "planit-frontend.labels" . | nindent 4 }}
+spec:
+  ingressClassName: nginx   # <- updated here
+  rules:
+    - http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: {{ include "planit-frontend.fullname" . }}-frontend 
+                port:
+                  number: {{ .Values.service.port }}
+{{- end }}

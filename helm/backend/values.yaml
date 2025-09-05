@@ -1,0 +1,19 @@
+replicaCount: 2
+
+image:
+  repository: millyanne93/planit-backend
+  tag: "1.8"
+  pullPolicy: IfNotPresent
+
+service:
+  type: ClusterIP
+  port: 5000
+
+resources: {}
+
+# Direct env values (used in Secret)
+env:
+  MONGO_URI: "mongodb://appuser:AppUserPass2025@planit-mongo-mongodb:27017/planitdb?authSource=admin"
+  JWT_SECRET: "changeme"
+
+resources: {}
