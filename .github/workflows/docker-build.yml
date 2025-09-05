@@ -106,47 +106,78 @@ jobs:
           push: false
           tags: planit-backend:dev
 
-  deploy:
+  # AUTO-DEPLOY DISABLED - Deploy manually to local cluster
+  # deploy:
+  #   needs: build-and-push
+  #   runs-on: ubuntu-latest
+  #   if: false  # Disabled for local development
+  #   steps:
+  #     - uses: actions/checkout@v4
+  #
+  #     - name: Set up kubectl
+  #       uses: azure/setup-kubectl@v4
+  #       with:
+  #         version: v1.30.0
+  #
+  #     - name: Set up Helm
+  #       uses: azure/setup-helm@v4
+  #       with:
+  #         version: v3.15.2
+  #
+  #     - name: Configure kubeconfig
+  #       run: |
+  #         mkdir -p $HOME/.kube
+  #         echo "${{ secrets.KUBE_CONFIG }}" | base64 -d > $HOME/.kube/config
+  #
+  #     - name: Helm Dependency Update
+  #       run: helm dependency update ./helm/database
+  #
+  #     - name: Deploy Database
+  #       run: |
+  #         helm upgrade --install planit-mongo ./helm/database \
+  #           --namespace planit --create-namespace
+  #
+  #     - name: Deploy Backend
+  #       run: |
+  #         helm upgrade --install planit-backend ./helm/backend \
+  #           --namespace planit --create-namespace \
+  #           --set image.repository=millyanne93/planit-backend \
+  #           --set image.tag=${{ github.sha }}
+  #
+  #     - name: Deploy Frontend
+  #       run: |
+  #         helm upgrade --install planit-frontend ./helm/frontend \
+  #           --namespace planit --create-namespace \
+  #           --set image.repository=millyanne93/planit-frontend \
+  #           --set image.tag=${{ github.sha }}
+
+  # Print deployment instructions
+  deployment-instructions:
     needs: build-and-push
     runs-on: ubuntu-latest
     if: github.ref == 'refs/heads/master'
     steps:
-      - uses: actions/checkout@v4
-
-      - name: Set up kubectl
-        uses: azure/setup-kubectl@v4
-        with:
-          version: v1.30.0
-
-      - name: Set up Helm
-        uses: azure/setup-helm@v4
-        with:
-          version: v3.15.2
-
-      - name: Configure kubeconfig
+      - name: Print manual deployment instructions
         run: |
-          mkdir -p $HOME/.kube
-          echo "${{ secrets.KUBE_CONFIG }}" | base64 -d > $HOME/.kube/config
-
-      - name: Helm Dependency Update
-        run: helm dependency update ./helm/database
-
-      - name: Deploy Database
-        run: |
-          helm upgrade --install planit-mongo ./helm/database \
-            --namespace planit --create-namespace
-
-      - name: Deploy Backend
-        run: |
-          helm upgrade --install planit-backend ./helm/backend \
-            --namespace planit --create-namespace \
-            --set image.repository=millyanne93/planit-backend \
-            --set image.tag=${{ github.sha }}
-
-      - name: Deploy Frontend
-        run: |
-          helm upgrade --install planit-frontend ./helm/frontend \
-            --namespace planit --create-namespace \
-            --set image.repository=millyanne93/planit-frontend \
-            --set image.tag=${{ github.sha }}
-
+          echo "🚀 Images built and pushed successfully!"
+          echo ""
+          echo "📝 To deploy to your local Minikube cluster, run these commands:"
+          echo ""
+          echo "# 1. Fix MongoDB first (if needed):"
+          echo "helm upgrade --install planit-mongo ./helm/database --namespace default"
+          echo ""
+          echo "# 2. Deploy backend with latest image:"
+          echo "helm upgrade --install planit-backend ./helm/backend \\"
+          echo "  --namespace default \\"
+          echo "  --set image.repository=millyanne93/planit-backend \\"
+          echo "  --set image.tag=${{ github.sha }}"
+          echo ""
+          echo "# 3. Deploy frontend with latest image:"
+          echo "helm upgrade --install planit-frontend ./helm/frontend \\"
+          echo "  --namespace default \\"
+          echo "  --set image.repository=millyanne93/planit-frontend \\"
+          echo "  --set image.tag=${{ github.sha }}"
+          echo ""
+          echo "💡 Image tags:"
+          echo "  - Latest: millyanne93/planit-frontend:latest, millyanne93/planit-backend:latest"
+          echo "  - This commit: millyanne93/planit-frontend:${{ github.sha }}, millyanne93/planit-backend:${{ github.sha }}"
