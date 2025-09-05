@@ -1,0 +1,32 @@
+version: "3.9"
+
+services:
+  backend:
+    build: ./backend
+    container_name: planit-backend
+    ports:
+      - "5000:5000"
+    environment:
+      - DATABASE_URL=mongodb://mongo:27017/planit
+    depends_on:
+      - mongo
+
+  frontend:
+    build: ./frontend
+    container_name: planit-frontend
+    ports:
+      - "3000:80"   # Maps localhost:3000 -> nginx:80
+    depends_on:
+      - backend
+
+  mongo:
+    image: mongo:6.0
+    container_name: planit-mongo
+    restart: always
+    volumes:
+      - mongo_data:/data/db
+    # ⚠️ No ports
+
+volumes:
+  mongo_data:
+

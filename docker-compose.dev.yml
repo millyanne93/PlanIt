@@ -1,0 +1,44 @@
+version: "3.9"
+
+services:
+  backend:
+    build: ./backend
+    container_name: planit-backend-dev
+    command: python3 -m app.main
+    volumes:
+      - ./backend:/app
+    ports:
+      - "5000:5000"
+    environment:
+      - FLASK_ENV=development
+      - DATABASE_URL=mongodb://mongo:27017/planit
+    depends_on:
+      - mongo
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: planit-frontend-dev
+    command: npm start
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules   # prevent overwriting node_modules
+    ports:
+      - "3000:3000"
+    environment:
+      - CHOKIDAR_USEPOLLING=true
+    depends_on:
+      - backend
+
+  mongo:
+    image: mongo:6.0
+    container_name: planit-mongo-dev
+    restart: always
+    volumes:
+      - mongo_data:/data/db
+    # ⚠️ No "ports:" here either
+
+volumes:
+  mongo_data:
+
