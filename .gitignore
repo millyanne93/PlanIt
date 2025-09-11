@@ -1,2 +1,12 @@
 .env
 helm/minikube-linux-amd64
+# Terraform files
+.terraform/
+*.tfstate
+*.tfstate.backup
+crash.log
+*.zip
+
+# Terraform providers and downloaded binaries
+terraform/**/.terraform/
+terraform/**/*.zip

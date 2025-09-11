@@ -1,0 +1,33 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: planit-ingress
+  namespace: frontend
+  annotations:
+    kubernetes.io/ingress.class: nginx
+    nginx.ingress.kubernetes.io/use-regex: "true"  # Enable regex support
+    nginx.ingress.kubernetes.io/rewrite-target: /$2
+    nginx.ingress.kubernetes.io/cors-allow-origin: "https://$host,http://$host"
+    nginx.ingress.kubernetes.io/cors-allow-methods: "GET, PUT, POST, DELETE, PATCH, OPTIONS"
+    nginx.ingress.kubernetes.io/cors-allow-headers: "DNT,Keep-Alive,User-Agent,X-Requested-With,If-Modified-Since,Cache-Control,Content-Type,Authorization"
+spec:
+  rules:
+  - http:
+      paths:
+      # Frontend route - serves React app
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: planit-frontend-frontend
+            port:
+              number: 80
+
+      # Backend API routes - proxies to backend service with path rewriting
+      - path: /api(/|$)(.*)
+        pathType: ImplementationSpecific  # Changed from Prefix
+        backend:
+          service:
+            name: planit-backend-backend
+            port:
+              number: 5000
