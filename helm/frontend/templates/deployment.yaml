@@ -1,31 +1,25 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ include "planit-frontend.fullname" . }}
-  labels:
-    app: {{ include "planit-frontend.name" . }}
-    chart: {{ include "planit-frontend.chart" . }}
-    release: {{ .Release.Name }}
-    heritage: {{ .Release.Service }}
+  name: {{ .Release.Name }}-frontend
 spec:
   replicas: {{ .Values.replicaCount }}
   selector:
     matchLabels:
-      app: {{ include "planit-frontend.name" . }}
-      release: {{ .Release.Name }}
+      app: {{ .Release.Name }}-frontend
   template:
     metadata:
       labels:
-        app: {{ include "planit-frontend.name" . }}
-        release: {{ .Release.Name }}
+        app: {{ .Release.Name }}-frontend
     spec:
       containers:
         - name: {{ .Chart.Name }}
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           ports:
-            - containerPort: {{ .Values.service.port }}
+            - containerPort: {{ .Values.service.targetPort | default 3000 }}
               protocol: TCP
+              name: http
           env:
             {{- range $key, $value := .Values.env }}
             - name: {{ $key }}
