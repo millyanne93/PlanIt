@@ -11,9 +11,5 @@ service:
 
 resources: {}
 
-# Direct env values (used in Secret)
-env:
-  MONGO_URI: "mongodb://appuser:AppUserPass2025@planit-mongo-mongodb:27017/planitdb?authSource=admin"
-  JWT_SECRET: "changeme"
 
 resources: {}
