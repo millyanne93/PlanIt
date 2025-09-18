@@ -241,7 +241,7 @@ resource "helm_release" "frontend" {
 
   set {
     name  = "service.targetPort"
-    value = "3000"
+    value = "80"
   }
 
   set {
