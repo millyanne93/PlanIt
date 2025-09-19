@@ -10,11 +10,7 @@ service:
   port: 80
   targetPort: 80
 
-resources: {}
-
-# Environment variables passed into the frontend container
-env:
-  API_BASE_URL: "http://localhost/api"
+resources: {} 
 # Ingress configuration
 ingress:
   enabled: false
