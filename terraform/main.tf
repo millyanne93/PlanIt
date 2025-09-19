@@ -287,11 +287,19 @@ data "kubernetes_service" "nginx_ingress" {
 
   depends_on = [helm_release.nginx_ingress]
 }
-resource "kubectl_manifest" "ingress" {
-  yaml_body = file("${path.module}/../helm/k8s-manifests/ingress.yaml")
+# Apply the frontend ingress manifest
+resource "kubectl_manifest" "frontend_ingress" {
+  yaml_body = file("${path.module}/../helm/k8s-manifests/ingress-frontend.yaml")
 
   depends_on = [
     helm_release.frontend,
+    helm_release.nginx_ingress
+  ]
+}
+resource "kubectl_manifest" "backend_ingress" {
+  yaml_body = file("${path.module}/../helm/k8s-manifests/ingress-backend.yaml")
+
+  depends_on = [
     helm_release.backend,
     helm_release.nginx_ingress
   ]
