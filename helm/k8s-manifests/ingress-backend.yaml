@@ -1,0 +1,23 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: planit-backend-ingress
+  namespace: frontend
+  annotations:
+    kubernetes.io/ingress.class: nginx
+    nginx.ingress.kubernetes.io/use-regex: "true"
+    nginx.ingress.kubernetes.io/rewrite-target: /$2
+    nginx.ingress.kubernetes.io/cors-allow-headers: DNT,Keep-Alive,User-Agent,X-Requested-With,If-Modified-Since,Cache-Control,Content-Type,Authorization
+    nginx.ingress.kubernetes.io/cors-allow-methods: GET, PUT, POST, DELETE, PATCH, OPTIONS
+    nginx.ingress.kubernetes.io/cors-allow-origin: https://$host,http://$host
+spec:
+  rules:
+  - http:
+      paths:
+      - path: /api(/|$)(.*)
+        pathType: ImplementationSpecific
+        backend:
+          service:
+            name: planit-backend-backend
+            port:
+              number: 5000
