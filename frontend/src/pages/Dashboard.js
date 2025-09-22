@@ -12,7 +12,7 @@ const Dashboard = () => {
   const [editTask, setEditTask] = useState(null);
   const [stats, setStats] = useState({ total: 0, pending: 0, completed: 0, overdue: 0 });
 
-  const API_URL = "http://localhost:5000/tasks";
+  const API_URL = "/api/tasks";
 
   const fetchTasks = useCallback(async () => {
     try {

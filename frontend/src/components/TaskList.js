@@ -93,7 +93,7 @@ export default function TaskList({ tasks, onUpdateTask, onDeleteTask }) {
     setCompletingTasks(prev => new Set([...prev, taskId]));
 
     try {
-      const response = await fetch(`http://localhost:5000/tasks/${taskId}/complete`, {
+      const response = await fetch(`/api/tasks/${taskId}/complete`, {
         method: "PUT",
         headers: { 
           "Content-Type": "application/json",

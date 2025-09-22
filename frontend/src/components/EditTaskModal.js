@@ -79,7 +79,7 @@ export default function EditTaskModal({ task, onClose, onUpdateTask }) {
         updateData.shared_with = form.shared_with;
       }
 
-      const res = await fetch(`http://localhost:5000/tasks/${taskId}`, {
+      const res = await fetch(`/api/tasks/${taskId}`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",

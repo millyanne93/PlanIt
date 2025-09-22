@@ -2,7 +2,7 @@ replicaCount: 2
 
 image:
   repository: millyanne93/planit-frontend
-  tag: "1.9"
+  tag: "1.10"
   pullPolicy: IfNotPresent
 
 service:

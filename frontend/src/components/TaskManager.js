@@ -9,7 +9,7 @@ export default function TaskManager() {
   const [tasks, setTasks] = useState([]);
   const [editTask, setEditTask] = useState(null);
 
-  const API_URL = "http://localhost:5000/tasks";
+  const API_URL = "/api/tasks";
 
   const fetchTasks = async () => {
     try {

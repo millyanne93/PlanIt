@@ -26,7 +26,7 @@ export default function TaskForm({ onAddTask }) {
     try {
       console.log("Submitting task:", form);
 
-      const response = await fetch("http://localhost:5000/tasks", {
+      const response = await fetch("/api/tasks", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
