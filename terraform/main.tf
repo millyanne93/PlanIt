@@ -287,6 +287,127 @@ data "kubernetes_service" "nginx_ingress" {
 
   depends_on = [helm_release.nginx_ingress]
 }
+
+# ========== MONITORING STACK ADDITION ==========
+
+# Create a namespace for the monitoring stack
+resource "kubernetes_namespace" "monitoring" {
+  metadata {
+    name = "monitoring"
+  }
+  depends_on = [module.eks]
+}
+
+# Deploy the kube-prometheus-stack (Prometheus + Grafana + Alertmanager)
+resource "helm_release" "kube_prometheus_stack" {
+  provider = helm.eks
+
+  name       = "kube-prometheus-stack"
+  repository = "https://prometheus-community.github.io/helm-charts"
+  chart      = "kube-prometheus-stack"
+  version    = "58.0.0"  # Check for latest version
+  namespace  = kubernetes_namespace.monitoring.metadata[0].name
+
+  # Optional: Use a custom values file for configuration
+  # values = [
+  #   file("${path.module}/monitoring-values.yaml")
+  # ]
+
+  # Set some basic configurations to control resource usage
+  set {
+    name  = "prometheus.prometheusSpec.resources.requests.memory"
+    value = "512Mi"
+  }
+
+  set {
+    name  = "prometheus.prometheusSpec.resources.requests.cpu"
+    value = "250m"
+  }
+
+  set {
+    name  = "grafana.resources.requests.memory"
+    value = "256Mi"
+  }
+
+  set {
+    name  = "grafana.resources.requests.cpu"
+    value = "100m"
+  }
+
+  # Expose Grafana via LoadBalancer for external access
+  set {
+    name  = "grafana.service.type"
+    value = "LoadBalancer"
+  }
+
+  depends_on = [
+    kubernetes_namespace.monitoring,
+    helm_release.nginx_ingress
+  ]
+}
+
+# ========== LOGGING STACK ADDITION ==========
+
+# Create a namespace for the logging stack
+resource "kubernetes_namespace" "logging" {
+  metadata {
+    name = "logging"
+  }
+  depends_on = [module.eks]
+}
+
+# Deploy Loki for logs aggregation
+resource "helm_release" "loki" {
+  provider = helm.eks
+
+  name       = "loki"
+  repository = "https://grafana.github.io/helm-charts"
+  chart      = "loki"
+  version    = "5.42.0"  # Check for latest version
+  namespace  = kubernetes_namespace.logging.metadata[0].name
+
+  set {
+    name  = "loki.auth_enabled"
+    value = "false"
+  }
+
+  set {
+    name  = "singleBinary.replicas"
+    value = "1"
+  }
+
+  depends_on = [
+    kubernetes_namespace.logging,
+    helm_release.nginx_ingress
+  ]
+}
+
+# Deploy Promtail for log collection
+resource "helm_release" "promtail" {
+  provider = helm.eks
+
+  name       = "promtail"
+  repository = "https://grafana.github.io/helm-charts"
+  chart      = "promtail"
+  version    = "6.15.0"  # Check for latest version
+  namespace  = kubernetes_namespace.logging.metadata[0].name
+
+  set {
+    name  = "loki.serviceName"
+    value = "loki"
+  }
+
+  set {
+    name  = "loki.servicePort"
+    value = "3100"
+  }
+
+  depends_on = [
+    helm_release.loki,
+    kubernetes_namespace.logging
+  ]
+}
+
 # Apply the frontend ingress manifest
 resource "kubectl_manifest" "frontend_ingress" {
   yaml_body = file("${path.module}/../helm/k8s-manifests/ingress-frontend.yaml")

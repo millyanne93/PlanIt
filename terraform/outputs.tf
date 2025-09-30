@@ -24,3 +24,19 @@ output "mongodb_connection_string" {
   value = "mongodb://root:${nonsensitive(data.kubernetes_secret.mongo_root.data["mongodb-root-password"])}@planit-mongo-mongodb.database.svc.cluster.local:27017/planitdb?authSource=admin"
   sensitive   = true
 }
+
+
+output "grafana_url" {
+  description = "Grafana dashboard URL"
+  value       = "http://${helm_release.kube_prometheus_stack.name}-grafana.${kubernetes_namespace.monitoring.metadata[0].name}.svc.cluster.local"
+}
+
+output "prometheus_url" {
+  description = "Prometheus UI URL"
+  value       = "http://${helm_release.kube_prometheus_stack.name}-prometheus.${kubernetes_namespace.monitoring.metadata[0].name}.svc.cluster.local:9090"
+}
+
+output "loki_url" {
+  description = "Loki logs URL"
+  value       = "http://${helm_release.loki.name}.${kubernetes_namespace.logging.metadata[0].name}.svc.cluster.local:3100"
+}
